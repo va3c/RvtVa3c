@@ -53,6 +53,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -63,6 +64,7 @@
     <Compile Include="Va3cExportContext.cs" />
     <Compile Include="Va3cFace.cs" />
     <Compile Include="Va3cMaterial.cs" />
+    <Compile Include="Va3cScene.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RvtVa3c.addin" />
