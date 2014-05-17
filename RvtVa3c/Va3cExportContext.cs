@@ -8,6 +8,7 @@ using Autodesk.Revit.DB;
 using System.Text;
 using Autodesk.Revit.Utility;
 using System.Xml.Linq;
+using System.Dynamic;
 #endregion
 
 namespace RvtVa3c
@@ -214,14 +215,13 @@ namespace RvtVa3c
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
     List<Va3cScene.SceneMaterial> _materials;
+    Dictionary<ElementId, int> _materialIndices;
 
-    bool isCancelled = false;
-
-    Stack<ElementId> elementStack = new Stack<ElementId>();
+    Stack<ElementId> _elementStack = new Stack<ElementId>();
 
     Stack<Transform> transformationStack = new Stack<Transform>();
 
-    ElementId currentMaterialId = ElementId.InvalidElementId;
+    int _currentMaterialIndex;
 
     Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
     
@@ -241,8 +241,8 @@ namespace RvtVa3c
     {
       get
       {
-        return ( elementStack.Count > 0 )
-          ? elementStack.Peek()
+        return ( _elementStack.Count > 0 )
+          ? _elementStack.Peek()
           : ElementId.InvalidElementId;
       }
     }
@@ -263,41 +263,57 @@ namespace RvtVa3c
       }
     }
 
+    /// <summary>
+    /// Set the current material
+    /// </summary>
+    void SetCurrentMaterial( ElementId idMaterial )
+    {
+      if( _materialIndices.ContainsKey( idMaterial ) )
+      {
+        _currentMaterialIndex = _materialIndices[idMaterial];
+      }
+      else
+      {
+        Material material = _doc.GetElement( 
+          idMaterial ) as Material;
+
+        Va3cScene.SceneMaterial m 
+          = new Va3cScene.SceneMaterial();
+
+        _currentMaterialIndex = _materials.Count;
+
+        _materials.Add( m );
+      }
+    }
+
     public Va3cExportContext( Document document )
     {
       _doc = document;
-      _scene = new Va3cScene();
-      _vertices = new VertexLookupInt();
-      _faces = new List<FaceMaterial>();
-      transformationStack.Push( Transform.Identity );
     }
 
     public bool Start()
     {
-      CurrentPolymeshIndex = 0;
-      _faces.Clear();
-      polymeshToMaterialId.Clear();
-
-      //streamWriter = new StreamWriter( "c:\\temp\\test.dae" );
-
-      WriteXmlColladaBegin();
-      WriteXmlAsset();
-
-      WriteXmlLibraryGeometriesBegin();
+      _faces = new List<FaceMaterial>();
+      _materials = new List<Va3cScene.SceneMaterial>();
+      _materialIndices = new Dictionary<ElementId, int>();
+      _scene = new Va3cScene();
+      _vertices = new VertexLookupInt();
+      transformationStack.Push( Transform.Identity );
 
       return true;
     }
 
     public void Finish()
     {
-      WriteXmlLibraryMaterials();
-      WriteXmlLibraryEffects();
-      WriteXmlLibraryVisualScenes();
-      WriteXmlColladaEnd();
+      // This saves the whole hassle of explicitly 
+      // defining a whole hierarchy of C# classes
+      // to serialise to JSON - do it all on the 
+      // fly instead.
 
-      //streamWriter.Close();
+      // https://github.com/va3c/GHva3c/blob/master/GHva3c/GHva3c/va3c_geometry.cs
 
-      //_collada.Save( @"C:\temp\testnew.dae" );
+      dynamic jason = new ExpandoObject();
+
     }
 
     public void OnPolymesh( PolymeshTopology polymesh )
@@ -365,13 +381,13 @@ namespace RvtVa3c
       // beneficial to store the current material and only get its attributes
       // when the material actually changes.
 
-      currentMaterialId = node.MaterialId;
+      SetCurrentMaterial( node.MaterialId );
     }
 
     public bool IsCanceled()
     {
       // This method is invoked many times during the export process.
-      return isCancelled;
+      return false;
     }
 
     public void OnDaylightPortal( DaylightPortalNode node )
@@ -405,11 +421,15 @@ namespace RvtVa3c
     {
       Element e = _doc.GetElement( elementId );
       Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
-      elementStack.Push( elementId );
+      _elementStack.Push( elementId );
 
       ICollection<ElementId> idsMaterialGeometry = e.GetMaterialIds( false );
       ICollection<ElementId> idsMaterialPaint = e.GetMaterialIds( true );
 
+      if( null != e.Category )
+      {
+        SetCurrentMaterial( e.Category.Material.Id );
+      }
       return RenderNodeAction.Proceed;
     }
 
@@ -418,7 +438,7 @@ namespace RvtVa3c
     {
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
       // Note: this method is invoked even for elements that were skipped.
-      elementStack.Pop();
+      _elementStack.Pop();
     }
 
     public RenderNodeAction OnFaceBegin( FaceNode node )
@@ -476,6 +496,8 @@ namespace RvtVa3c
     }
 
     #region Write Collada XML methods
+    ElementId _currentMaterialId = ElementId.InvalidElementId;
+
     string GetElementName( Element element, string defaultPrefix )
     {
       //make it an NCName
@@ -762,7 +784,7 @@ namespace RvtVa3c
                               new XAttribute( "count", polymesh.NumberOfFacets ) );
       mesh.Add( triangles );
 
-      if( IsMaterialValid( currentMaterialId ) ) triangles.AddAnnotation( new XAttribute( "material", "material-" + currentMaterialId ) );
+      if( IsMaterialValid( _currentMaterialId ) ) triangles.AddAnnotation( new XAttribute( "material", "material-" + _currentMaterialId ) );
 
       triangles.Add( new XElement( _ns + "input",
                           new XAttribute( "offset", "0" ),
@@ -821,7 +843,7 @@ namespace RvtVa3c
                              new XAttribute( "count", polymesh.NumberOfFacets ) );
       mesh.Add( triangles );
 
-      if( IsMaterialValid( currentMaterialId ) ) triangles.AddAnnotation( new XAttribute( "material", "material-" + currentMaterialId ) );
+      if( IsMaterialValid( _currentMaterialId ) ) triangles.AddAnnotation( new XAttribute( "material", "material-" + _currentMaterialId ) );
 
       triangles.Add( new XElement( _ns + "input",
                           new XAttribute( "offset", "0" ),
