@@ -217,9 +217,9 @@ namespace RvtVa3c
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
-
+    Va3cScene.Va3cObject _currentObject;
+    
     Stack<ElementId> _elementStack = new Stack<ElementId>();
-
     Stack<Transform> transformationStack = new Stack<Transform>();
 
     string _currentMaterialUid;
@@ -448,38 +448,17 @@ namespace RvtVa3c
         _faces.Add( new FaceMaterial(
           v1, v2, v3, _currentMaterialUid ) );
       }
-
-
-      //CurrentPolymeshIndex++;
-
-      //XElement geom = WriteXmlGeometryBegin();
-      //_libraryGeometry.Add( geom );
-      //XElement mesh = new XElement( _ns + "mesh" );
-      //geom.Add( mesh );
-
-      //WriteXmlGeometrySourcePositions( mesh, polymesh );
-      //WriteXmlGeometrySourceNormals( mesh, polymesh );
-      //if( polymesh.NumberOfUVs > 0 )
-      //  WriteXmlGeometrySourceMap( mesh, polymesh );
-
-      //WriteXmlGeometryVertices( mesh );
-
-      //if( polymesh.NumberOfUVs > 0 )
-      //  WriteXmlGeometryTrianglesWithMap( mesh, polymesh );
-      //else
-      //  WriteXmlGeometryTrianglesWithoutMap( mesh, polymesh );
-
-
-      ////_faces.Add( new Va3cFace( CurrentElement, currentMaterialId ) );
-      //polymeshToMaterialId.Add( CurrentPolymeshIndex, currentMaterialId );
+      //_currentObject.
     }
 
     public void OnMaterial( MaterialNode node )
     {
-      // OnMaterial method can be invoked for every single out-coming mesh
-      // even when the material has not actually changed. Thus it is usually
-      // beneficial to store the current material and only get its attributes
-      // when the material actually changes.
+      // OnMaterial method can be invoked for every 
+      // single out-coming mesh even when the material 
+      // has not actually changed. Thus it is usually
+      // beneficial to store the current material and 
+      // only get its attributes when the material 
+      // actually changes.
 
       Element m = _doc.GetElement( node.MaterialId );
       SetCurrentMaterial( m.UniqueId );
@@ -531,14 +510,31 @@ namespace RvtVa3c
       {
         SetCurrentMaterial( e.Category.Material.UniqueId );
       }
+
+      _currentObject = new Va3cScene.Va3cObject();
+
+      _currentObject.name = Util.ElementDescription( e );
+      _currentObject.geometry = e.UniqueId;
+      _currentObject.material = _currentMaterialUid;
+      _currentObject.matrix = null;
+      _currentObject.type = "element";
+      _currentObject.uuid = e.UniqueId;
+
       return RenderNodeAction.Proceed;
     }
 
     public void OnElementEnd(
       ElementId elementId )
     {
+      // Note: this method is invoked even for 
+      // elements that were skipped.
+
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
-      // Note: this method is invoked even for elements that were skipped.
+
+      _scene.obj.children.Add( _currentObject );
+
+      _currentObject = null;
+
       _elementStack.Pop();
     }
 
