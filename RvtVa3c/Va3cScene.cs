@@ -45,7 +45,7 @@ namespace RvtVa3c
     public class SceneMaterialMetadata
     {
       [DataMember]
-      public string Version { get; set; }
+      public double version { get; set; }
       
       [DataMember]
       public string type { get; set; }

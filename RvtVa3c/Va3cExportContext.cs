@@ -280,6 +280,19 @@ namespace RvtVa3c
         Va3cScene.SceneMaterial m 
           = new Va3cScene.SceneMaterial();
 
+        m.metadata = new Va3cScene.SceneMaterialMetadata();
+        m.metadata.type = "material";
+        m.metadata.version = 4.2;
+        m.metadata.generator = "va3c";
+
+        m.type = "MeshPhongMaterial";
+        m.color = Util.ColorToInt( material.Color );
+        m.ambient = m.color;
+        m.emissive = 0;
+        m.specular = m.color;
+        m.shininess = material.Shininess; // todo: does this need scaling to e.g. [0,100]?
+        m.opacity = 128 - material.Transparency;
+
         _currentMaterialIndex = _materials.Count;
 
         _materials.Add( m );

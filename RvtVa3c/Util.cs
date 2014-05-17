@@ -26,5 +26,15 @@ namespace RvtVa3c
         RealString( p.Y ),
         RealString( p.Z ) );
     }
+
+    /// <summary>
+    /// Return an integer value for a Revit Color.
+    /// </summary>
+    public static int ColorToInt( Color color )
+    {
+      return ( (int) color.Red ) << 16
+        | ( (int) color.Green ) << 8
+        | (int) color.Blue;
+    }
   }
 }
