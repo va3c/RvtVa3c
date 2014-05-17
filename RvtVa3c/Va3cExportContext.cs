@@ -14,8 +14,206 @@ namespace RvtVa3c
 {
   class Va3cExportContext : IExportContext
   {
+    #region VertexLookupXyz
+    /// <summary>
+    /// A vertex lookup class to eliminate 
+    /// duplicate vertex definitions.
+    /// </summary>
+    class VertexLookupXyz : Dictionary<XYZ, int>
+    {
+      #region XyzEqualityComparer
+      /// <summary>
+      /// Define equality for Revit XYZ points.
+      /// Very rough tolerance, as used by Revit itself.
+      /// </summary>
+      class XyzEqualityComparer : IEqualityComparer<XYZ>
+      {
+        const double _sixteenthInchInFeet
+          = 1.0 / ( 16.0 * 12.0 );
+
+        public bool Equals( XYZ p, XYZ q )
+        {
+          return p.IsAlmostEqualTo( q,
+            _sixteenthInchInFeet );
+        }
+
+        public int GetHashCode( XYZ p )
+        {
+          return Util.PointString( p ).GetHashCode();
+        }
+      }
+      #endregion // XyzEqualityComparer
+
+      public VertexLookupXyz()
+        : base( new XyzEqualityComparer() )
+      {
+      }
+
+      /// <summary>
+      /// Return the index of the given vertex,
+      /// adding a new entry if required.
+      /// </summary>
+      public int AddVertex( XYZ p )
+      {
+        return ContainsKey( p )
+          ? this[p]
+          : this[p] = Count;
+      }
+    }
+    #endregion // VertexLookupXyz
+
+    #region VertexLookupInt
+    /// <summary>
+    /// An integer-based 3D point class.
+    /// </summary>
+    class PointInt : IComparable<PointInt>
+    {
+      public long X { get; set; }
+      public long Y { get; set; }
+      public long Z { get; set; }
+
+      //public PointInt( int x, int y, int z )
+      //{
+      //  X = x;
+      //  Y = y;
+      //  Z = z;
+      //}
+
+      /// <summary>
+      /// Consider a Revit length zero 
+      /// if is smaller than this.
+      /// </summary>
+      const double _eps = 1.0e-9;
+
+      /// <summary>
+      /// Conversion factor from feet to millimetres.
+      /// </summary>
+      const double _feet_to_mm = 25.4 * 12;
+
+      /// <summary>
+      /// Conversion a given length value 
+      /// from feet to millimetre.
+      /// </summary>
+      static long ConvertFeetToMillimetres( double d )
+      {
+        if( 0 < d )
+        {
+          return _eps > d
+            ? 0
+            : (long) ( _feet_to_mm * d + 0.5 );
+
+        }
+        else
+        {
+          return _eps > -d
+            ? 0
+            : (long) ( _feet_to_mm * d - 0.5 );
+
+        }
+      }
+
+      public PointInt( XYZ p )
+      {
+        X = ConvertFeetToMillimetres( p.X );
+        Y = ConvertFeetToMillimetres( p.Y );
+        Z = ConvertFeetToMillimetres( p.Z );
+      }
+
+      public int CompareTo( PointInt a )
+      {
+        long d = X - a.X;
+
+        if( 0 == d )
+        {
+          d = Y - a.Y;
+
+          if( 0 == d )
+          {
+            d = Z - a.Z;
+          }
+        }
+        return ( 0 == d ) ? 0 : ( ( 0 < d ) ? 1 : -1 );
+      }
+    }
+
+    /// <summary>
+    /// A vertex lookup class to eliminate 
+    /// duplicate vertex definitions.
+    /// </summary>
+    class VertexLookupInt : Dictionary<PointInt, int>
+    {
+      #region PointIntEqualityComparer
+      /// <summary>
+      /// Define equality for integer-based PointInt.
+      /// </summary>
+      class PointIntEqualityComparer : IEqualityComparer<PointInt>
+      {
+        public bool Equals( PointInt p, PointInt q )
+        {
+          return 0 == p.CompareTo( q );
+        }
+
+        public int GetHashCode( PointInt p )
+        {
+          return ( p.X.ToString()
+            + "," + p.Y.ToString()
+            + "," + p.Z.ToString() )
+            .GetHashCode();
+        }
+      }
+      #endregion // PointIntEqualityComparer
+
+      public VertexLookupInt()
+        : base( new PointIntEqualityComparer() )
+      {
+      }
+
+      /// <summary>
+      /// Return the index of the given vertex,
+      /// adding a new entry if required.
+      /// </summary>
+      public int AddVertex( PointInt p )
+      {
+        return ContainsKey( p )
+          ? this[p]
+          : this[p] = Count;
+      }
+    }
+    #endregion // VertexLookupInt
+
+    #region FaceMaterial
+    /// <summary>
+    /// A helper class containing three vertex lookup
+    /// indices defining a facet, e.g. mesh triangle,
+    /// plus the index into the material list to apply.
+    /// </summary>
+    class FaceMaterial
+    {
+      int V1 { get; set; }
+      int V2 { get; set; }
+      int V3 { get; set; }
+      int MaterialIndex { get; set; }
+      // we might want to keep track of this as well:
+      //ElementId ElementId { get; set; }
+      //int CategoryId { get; set; }
+      //ElementId MaterialId { get; set; }
+
+      public FaceMaterial( int v1, int v2, int v3, int material_index )
+      {
+        V1 = v1;
+        V2 = v2;
+        V3 = v3;
+        MaterialIndex = material_index;
+      }
+    }
+    #endregion // FaceMaterial
+
     Document _doc;
     Va3cScene _scene;
+    //VertexLookupXyz _vertices;
+    VertexLookupInt _vertices;
+    List<FaceMaterial> _faces;
+    List<Va3cScene.SceneMaterial> _materials;
 
     bool isCancelled = false;
 
@@ -27,7 +225,7 @@ namespace RvtVa3c
 
     Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
     
-    List<Va3cFace> _faces = new List<Va3cFace>();
+    //List<Va3cFace> _faces = new List<Va3cFace>();
 
     XNamespace _ns;
     XElement _collada;
@@ -69,6 +267,8 @@ namespace RvtVa3c
     {
       _doc = document;
       _scene = new Va3cScene();
+      _vertices = new VertexLookupInt();
+      _faces = new List<FaceMaterial>();
       transformationStack.Push( Transform.Identity );
     }
 
@@ -90,8 +290,6 @@ namespace RvtVa3c
 
     public void Finish()
     {
-
-
       WriteXmlLibraryMaterials();
       WriteXmlLibraryEffects();
       WriteXmlLibraryVisualScenes();
@@ -99,9 +297,248 @@ namespace RvtVa3c
 
       //streamWriter.Close();
 
-      _collada.Save( @"C:\temp\testnew.dae" );
+      //_collada.Save( @"C:\temp\testnew.dae" );
     }
 
+    public void OnPolymesh( PolymeshTopology polymesh )
+    {
+      Debug.WriteLine( string.Format( 
+        "    OnPolymesh: {0} points, {1} facets, {2} normals {3}",
+        polymesh.NumberOfPoints,
+        polymesh.NumberOfFacets, 
+        polymesh.NumberOfNormals,
+        polymesh.DistributionOfNormals ) );
+
+      IList<XYZ> pts = polymesh.GetPoints();
+
+      int i = 0, v1, v2, v3, material_index = -1;
+
+      foreach( PolymeshFacet facet 
+        in polymesh.GetFacets() )
+      {
+        Debug.WriteLine( string.Format( 
+          "      {0}: {1} {2} {3}", i++, 
+          facet.V1, facet.V2, facet.V3 ) );
+
+        v1 = _vertices.AddVertex( new PointInt(
+          pts[facet.V1] ) );
+        
+        v2 = _vertices.AddVertex( new PointInt(
+          pts[facet.V2] ) );
+
+        v3 = _vertices.AddVertex( new PointInt( 
+          pts[facet.V2] ) );
+
+        _faces.Add( new FaceMaterial( 
+          v1, v2, v3, material_index ) );
+      }
+
+
+      //CurrentPolymeshIndex++;
+
+      //XElement geom = WriteXmlGeometryBegin();
+      //_libraryGeometry.Add( geom );
+      //XElement mesh = new XElement( _ns + "mesh" );
+      //geom.Add( mesh );
+
+      //WriteXmlGeometrySourcePositions( mesh, polymesh );
+      //WriteXmlGeometrySourceNormals( mesh, polymesh );
+      //if( polymesh.NumberOfUVs > 0 )
+      //  WriteXmlGeometrySourceMap( mesh, polymesh );
+
+      //WriteXmlGeometryVertices( mesh );
+
+      //if( polymesh.NumberOfUVs > 0 )
+      //  WriteXmlGeometryTrianglesWithMap( mesh, polymesh );
+      //else
+      //  WriteXmlGeometryTrianglesWithoutMap( mesh, polymesh );
+
+
+      ////_faces.Add( new Va3cFace( CurrentElement, currentMaterialId ) );
+      //polymeshToMaterialId.Add( CurrentPolymeshIndex, currentMaterialId );
+    }
+
+    string GetElementName( Element element, string defaultPrefix )
+    {
+      //make it an NCName
+
+      //Element element = CurrentElement;
+      if( element != null )
+      {
+        string name = element.Name;
+        name = name.Replace( " ", "" );
+        name = name.Replace( "\"", "in" );
+        name = name.Replace( "&", "" );
+        name = name.Replace( ":", "_" );
+        name = name.Replace( ",", "_" );
+        name = name.Replace( "/", "_" );
+        name = name.Replace( "(", "_" );
+        name = name.Replace( ")", "_" );
+        name = name.Replace( "@", "_" );
+        name = name.Replace( "\\", "_" );
+        name = name.Replace( "/", "_" );
+
+        name = name.Replace( "'", "ft" );
+        name = name.Replace( "%20", "" );
+        name = name.Replace( "%", "_" );
+        name = name.Replace( "[", "_" );
+        name = name.Replace( "]", "_" );
+        if( char.IsNumber( name[0] ) ) name = defaultPrefix + name;
+        return name;
+      }
+      return ""; //default name
+    }
+
+    public void OnMaterial( MaterialNode node )
+    {
+      // OnMaterial method can be invoked for every single out-coming mesh
+      // even when the material has not actually changed. Thus it is usually
+      // beneficial to store the current material and only get its attributes
+      // when the material actually changes.
+
+      currentMaterialId = node.MaterialId;
+    }
+
+    string GetMaterialName( ElementId materialId )
+    {
+      Material material = _doc.GetElement( materialId ) as Material;
+      if( material != null )
+      {
+        return GetElementName( material, "Material" );
+      }
+
+      return ""; //default material name
+    }
+
+    bool IsMaterialValid( ElementId materialId )
+    {
+      if( materialId.IntegerValue < 0 ) return false;
+      Material material = _doc.GetElement( materialId ) as Material;
+      if( material != null )
+        return true;
+
+      return false;
+    }
+
+    XElement extractMaterialTexture( Material mat, XElement profileNode )
+    {
+      // we need to figure out if we can get at the texture... if we can, then pull it out to the target folder.
+      AppearanceAssetElement assetElement = _doc.GetElement( mat.AppearanceAssetId ) as AppearanceAssetElement;
+
+      if( assetElement == null ) return null;
+
+      Asset asset = assetElement.GetRenderingAsset();
+
+      Va3cMaterial cMat = new Va3cMaterial( mat );
+
+      return null;
+    }
+
+    public bool IsCanceled()
+    {
+      // This method is invoked many times during the export process.
+      return isCancelled;
+    }
+
+    public void OnDaylightPortal( DaylightPortalNode node )
+    {
+      Debug.WriteLine( "OnDaylightPortal: " + node.NodeName );
+      Asset asset = node.GetAsset();
+      Debug.WriteLine( "OnDaylightPortal: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+    }
+
+    public void OnRPC( RPCNode node )
+    {
+      Debug.WriteLine( "OnRPC: " + node.NodeName );
+      Asset asset = node.GetAsset();
+      Debug.WriteLine( "OnRPC: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+    }
+
+    public RenderNodeAction OnViewBegin( ViewNode node )
+    {
+      Debug.WriteLine( "OnViewBegin: " + node.NodeName + "(" + node.ViewId.IntegerValue + "): LOD: " + node.LevelOfDetail );
+      return RenderNodeAction.Proceed;
+    }
+
+    public void OnViewEnd( ElementId elementId )
+    {
+      Debug.WriteLine( "OnViewEnd: Id: " + elementId.IntegerValue );
+      // Note: This method is invoked even for a view that was skipped.
+    }
+
+    public RenderNodeAction OnElementBegin( 
+      ElementId elementId )
+    {
+      Element e = _doc.GetElement( elementId );
+      Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
+      elementStack.Push( elementId );
+
+      return RenderNodeAction.Proceed;
+    }
+
+    public void OnElementEnd( 
+      ElementId elementId )
+    {
+      Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
+      // Note: this method is invoked even for elements that were skipped.
+      elementStack.Pop();
+    }
+
+    public RenderNodeAction OnFaceBegin( FaceNode node )
+    {
+      // This method is invoked only if the custom exporter was set to include faces.
+      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
+      return RenderNodeAction.Proceed;
+    }
+
+    public void OnFaceEnd( FaceNode node )
+    {
+      // This method is invoked only if the custom exporter was set to include faces.
+      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
+      // Note: This method is invoked even for faces that were skipped.
+    }
+
+    public RenderNodeAction OnInstanceBegin( InstanceNode node )
+    {
+      Debug.WriteLine( "  OnInstanceBegin: " + node.NodeName + " symbol: " + node.GetSymbolId().IntegerValue );
+      // This method marks the start of processing a family instance
+      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
+
+      // We can either skip this instance or proceed with rendering it.
+      return RenderNodeAction.Proceed;
+    }
+
+    public void OnInstanceEnd( InstanceNode node )
+    {
+      Debug.WriteLine( "  OnInstanceEnd: " + node.NodeName );
+      // Note: This method is invoked even for instances that were skipped.
+      transformationStack.Pop();
+    }
+
+    public RenderNodeAction OnLinkBegin( LinkNode node )
+    {
+      Debug.WriteLine( "  OnLinkBegin: " + node.NodeName + " Document: " + node.GetDocument().Title + ": Id: " + node.GetSymbolId().IntegerValue );
+      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
+      return RenderNodeAction.Proceed;
+    }
+
+    public void OnLinkEnd( LinkNode node )
+    {
+      Debug.WriteLine( "  OnLinkEnd: " + node.NodeName );
+      // Note: This method is invoked even for instances that were skipped.
+      transformationStack.Pop();
+    }
+
+    public void OnLight( LightNode node )
+    {
+      Debug.WriteLine( "OnLight: " + node.NodeName );
+      Asset asset = node.GetAsset();
+      Debug.WriteLine( "OnLight: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+    }
+
+    #region Write Collada XML methods
     void WriteXmlColladaBegin()
     {
       _ns = "http://www.collada.org/2005/11/COLLADASchema";
@@ -154,78 +591,6 @@ namespace RvtVa3c
       //streamWriter.Write( "<library_geometries>\n" );
     }
 
-
-    public void OnPolymesh( PolymeshTopology polymesh )
-    {
-      Debug.WriteLine( "    OnPolymesh: " + polymesh.NumberOfPoints + " points: Normals: " + polymesh.DistributionOfNormals );
-      CurrentPolymeshIndex++;
-
-      XElement geom = WriteXmlGeometryBegin();
-      _libraryGeometry.Add( geom );
-      XElement mesh = new XElement( _ns + "mesh" );
-      geom.Add( mesh );
-
-      WriteXmlGeometrySourcePositions( mesh, polymesh );
-      WriteXmlGeometrySourceNormals( mesh, polymesh );
-      if( polymesh.NumberOfUVs > 0 )
-        WriteXmlGeometrySourceMap( mesh, polymesh );
-
-      WriteXmlGeometryVertices( mesh );
-
-      if( polymesh.NumberOfUVs > 0 )
-        WriteXmlGeometryTrianglesWithMap( mesh, polymesh );
-      else
-        WriteXmlGeometryTrianglesWithoutMap( mesh, polymesh );
-
-
-      //_faces.Add( new Va3cFace( CurrentElement, currentMaterialId ) );
-      polymeshToMaterialId.Add( CurrentPolymeshIndex, currentMaterialId );
-    }
-
-    XElement WriteXmlGeometryBegin()
-    {
-      XElement geom = new XElement( _ns + "geometry",
-                          new XAttribute( "id", "geom-" + CurrentPolymeshIndex ),
-                          new XAttribute( "name", GetElementName( CurrentElement, "Type" ) ) );
-
-      return geom;
-      //streamWriter.Write( "<geometry id=\"geom-" + CurrentPolymeshIndex + "\" name=\"" + GetElementName(CurrentElement) + "\">\n" );
-      //streamWriter.Write( "<mesh>\n" );
-    }
-
-    string GetElementName( Element element, string defaultPrefix )
-    {
-      //make it an NCName
-
-      //Element element = CurrentElement;
-      if( element != null )
-      {
-        string name = element.Name;
-        name = name.Replace( " ", "" );
-        name = name.Replace( "\"", "in" );
-        name = name.Replace( "&", "" );
-        name = name.Replace( ":", "_" );
-        name = name.Replace( ",", "_" );
-        name = name.Replace( "/", "_" );
-        name = name.Replace( "(", "_" );
-        name = name.Replace( ")", "_" );
-        name = name.Replace( "@", "_" );
-        name = name.Replace( "\\", "_" );
-        name = name.Replace( "/", "_" );
-
-        name = name.Replace( "'", "ft" );
-        name = name.Replace( "%20", "" );
-        name = name.Replace( "%", "_" );
-        name = name.Replace( "[", "_" );
-        name = name.Replace( "]", "_" );
-        if( char.IsNumber( name[0] ) ) name = defaultPrefix + name;
-        return name;
-      }
-      return ""; //default name
-    }
-
-
-
     void WriteXmlGeometrySourcePositions( XElement mesh, PolymeshTopology polymesh )
     {
 
@@ -269,7 +634,6 @@ namespace RvtVa3c
                             new XAttribute( "name", "Z" ),
                             new XAttribute( "type", "float" ) ) ) ) ) );
 
-
       //streamWriter.Write( "</float_array>\n" );
       //streamWriter.Write( "<technique_common>\n" );
       //streamWriter.Write( "<accessor source=\"#geom-" + CurrentPolymeshIndex + "-positions-array\"" + " count=\"" + polymesh.NumberOfPoints + "\" stride=\"3\">\n" );
@@ -279,9 +643,6 @@ namespace RvtVa3c
       //streamWriter.Write( "</accessor>\n" );
       //streamWriter.Write( "</technique_common>\n" );
       //streamWriter.Write( "</source>\n" );
-
-
-
     }
 
     void WriteXmlGeometrySourceNormals( XElement mesh, PolymeshTopology polymesh )
@@ -533,14 +894,15 @@ namespace RvtVa3c
       //streamWriter.Write( "</triangles>\n" );
     }
 
-    public void OnMaterial( MaterialNode node )
+    XElement WriteXmlGeometryBegin()
     {
-      // OnMaterial method can be invoked for every single out-coming mesh
-      // even when the material has not actually changed. Thus it is usually
-      // beneficial to store the current material and only get its attributes
-      // when the material actually changes.
+      XElement geom = new XElement( _ns + "geometry",
+                          new XAttribute( "id", "geom-" + CurrentPolymeshIndex ),
+                          new XAttribute( "name", GetElementName( CurrentElement, "Type" ) ) );
 
-      currentMaterialId = node.MaterialId;
+      return geom;
+      //streamWriter.Write( "<geometry id=\"geom-" + CurrentPolymeshIndex + "\" name=\"" + GetElementName(CurrentElement) + "\">\n" );
+      //streamWriter.Write( "<mesh>\n" );
     }
 
     void WriteXmlLibraryMaterials()
@@ -569,27 +931,6 @@ namespace RvtVa3c
       //streamWriter.Write( "</library_materials>\n" );
     }
 
-    string GetMaterialName( ElementId materialId )
-    {
-      Material material = _doc.GetElement( materialId ) as Material;
-      if( material != null )
-      {
-        return GetElementName( material, "Material" );
-      }
-
-      return ""; //default material name
-    }
-
-    bool IsMaterialValid( ElementId materialId )
-    {
-      if( materialId.IntegerValue < 0 ) return false;
-      Material material = _doc.GetElement( materialId ) as Material;
-      if( material != null )
-        return true;
-
-      return false;
-    }
-
     void WriteXmlLibraryEffects()
     {
       _libraryEffects = new XElement( _ns + "library_effects" );
@@ -606,8 +947,6 @@ namespace RvtVa3c
 
         XElement profileCommon = new XElement( _ns + "profile_COMMON" );
         XElement texture = extractMaterialTexture( material, profileCommon );
-
-
 
         _libraryEffects.Add( new XElement( _ns + "effect",
                                 new XAttribute( "id", "effect-" + materialId ),
@@ -685,20 +1024,6 @@ namespace RvtVa3c
       }
 
       //streamWriter.Write( "</library_effects>\n" );
-    }
-
-    XElement extractMaterialTexture( Material mat, XElement profileNode )
-    {
-      // we need to figure out if we can get at the texture... if we can, then pull it out to the target folder.
-      AppearanceAssetElement assetElement = _doc.GetElement( mat.AppearanceAssetId ) as AppearanceAssetElement;
-
-      if( assetElement == null ) return null;
-
-      Asset asset = assetElement.GetRenderingAsset();
-
-      Va3cMaterial cMat = new Va3cMaterial( mat );
-
-      return null;
     }
 
     public void WriteXmlLibraryVisualScenes()
@@ -801,109 +1126,6 @@ namespace RvtVa3c
       ////streamWriter.Write( "<instance_visual_scene url=\"#Revit_project\"/>\n" );
       ////streamWriter.Write( "</scene>\n" );
     }
-
-    public bool IsCanceled()
-    {
-      // This method is invoked many times during the export process.
-      return isCancelled;
-    }
-
-    public void OnDaylightPortal( DaylightPortalNode node )
-    {
-      Debug.WriteLine( "OnDaylightPortal: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnDaylightPortal: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
-    }
-
-    public void OnRPC( RPCNode node )
-    {
-      Debug.WriteLine( "OnRPC: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnRPC: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
-    }
-
-    public RenderNodeAction OnViewBegin( ViewNode node )
-    {
-      Debug.WriteLine( "OnViewBegin: " + node.NodeName + "(" + node.ViewId.IntegerValue + "): LOD: " + node.LevelOfDetail );
-      return RenderNodeAction.Proceed;
-    }
-
-    public void OnViewEnd( ElementId elementId )
-    {
-      Debug.WriteLine( "OnViewEnd: Id: " + elementId.IntegerValue );
-      // Note: This method is invoked even for a view that was skipped.
-    }
-
-    public RenderNodeAction OnElementBegin( 
-      ElementId elementId )
-    {
-      Element e = _doc.GetElement( elementId );
-      Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
-      elementStack.Push( elementId );
-
-      return RenderNodeAction.Proceed;
-    }
-
-    public void OnElementEnd( 
-      ElementId elementId )
-    {
-      Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
-      // Note: this method is invoked even for elements that were skipped.
-      elementStack.Pop();
-    }
-
-    public RenderNodeAction OnFaceBegin( FaceNode node )
-    {
-      // This method is invoked only if the custom exporter was set to include faces.
-      Debug.Assert( false, "we set exporter.IncludeFaces false" );
-      Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
-      return RenderNodeAction.Proceed;
-    }
-
-    public void OnFaceEnd( FaceNode node )
-    {
-      // This method is invoked only if the custom exporter was set to include faces.
-      Debug.Assert( false, "we set exporter.IncludeFaces false" );
-      Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
-      // Note: This method is invoked even for faces that were skipped.
-    }
-
-    public RenderNodeAction OnInstanceBegin( InstanceNode node )
-    {
-      Debug.WriteLine( "  OnInstanceBegin: " + node.NodeName + " symbol: " + node.GetSymbolId().IntegerValue );
-      // This method marks the start of processing a family instance
-      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
-
-      // We can either skip this instance or proceed with rendering it.
-      return RenderNodeAction.Proceed;
-    }
-
-    public void OnInstanceEnd( InstanceNode node )
-    {
-      Debug.WriteLine( "  OnInstanceEnd: " + node.NodeName );
-      // Note: This method is invoked even for instances that were skipped.
-      transformationStack.Pop();
-    }
-
-    public RenderNodeAction OnLinkBegin( LinkNode node )
-    {
-      Debug.WriteLine( "  OnLinkBegin: " + node.NodeName + " Document: " + node.GetDocument().Title + ": Id: " + node.GetSymbolId().IntegerValue );
-      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
-      return RenderNodeAction.Proceed;
-    }
-
-    public void OnLinkEnd( LinkNode node )
-    {
-      Debug.WriteLine( "  OnLinkEnd: " + node.NodeName );
-      // Note: This method is invoked even for instances that were skipped.
-      transformationStack.Pop();
-    }
-
-    public void OnLight( LightNode node )
-    {
-      Debug.WriteLine( "OnLight: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnLight: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
-    }
+    #endregion // Write Collada XML methods
   }
 }
