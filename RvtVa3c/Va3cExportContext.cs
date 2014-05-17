@@ -193,24 +193,26 @@ namespace RvtVa3c
       int V1 { get; set; }
       int V2 { get; set; }
       int V3 { get; set; }
-      int MaterialIndex { get; set; }
+      string MaterialUid { get; set; }
       // we might want to keep track of this as well:
       //ElementId ElementId { get; set; }
       //int CategoryId { get; set; }
       //ElementId MaterialId { get; set; }
 
-      public FaceMaterial( int v1, int v2, int v3, int material_index )
+      public FaceMaterial( int v1, int v2, int v3, string material_uid )
       {
         V1 = v1;
         V2 = v2;
         V3 = v3;
-        MaterialIndex = material_index;
+        MaterialUid = material_uid;
       }
     }
     #endregion // FaceMaterial
 
     Document _doc;
     Va3cScene _scene;
+    //dynamic _scene;
+
     //VertexLookupXyz _vertices;
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
@@ -223,7 +225,7 @@ namespace RvtVa3c
     string _currentMaterialUid;
 
     Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
-    
+
     //List<Va3cFace> _faces = new List<Va3cFace>();
 
     XNamespace _ns;
@@ -269,10 +271,10 @@ namespace RvtVa3c
     {
       if( !_materials.ContainsKey( uidMaterial ) )
       {
-        Material material = _doc.GetElement( 
+        Material material = _doc.GetElement(
           uidMaterial ) as Material;
 
-        Va3cScene.SceneMaterial m 
+        Va3cScene.SceneMaterial m
           = new Va3cScene.SceneMaterial();
 
         m.metadata = new Va3cScene.SceneMaterialMetadata();
@@ -305,6 +307,7 @@ namespace RvtVa3c
       _faces = new List<FaceMaterial>();
       _materials = new Dictionary<string, Va3cScene.SceneMaterial>();
       _scene = new Va3cScene();
+      //_scene = new ExpandoObject();
       _vertices = new VertexLookupInt();
       transformationStack.Push( Transform.Identity );
 
@@ -313,6 +316,10 @@ namespace RvtVa3c
 
     public void Finish()
     {
+      // Populate scene
+      // Serialise scene
+
+#if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
       // defining a whole hierarchy of C# classes
       // to serialise to JSON - do it all on the 
@@ -322,39 +329,110 @@ namespace RvtVa3c
 
       dynamic jason = new ExpandoObject();
 
+      //populate object properties
+
+      jason.geometry = new ExpandoObject();
+      jason.groups = new object[0];
+      jason.material = matName;
+      jason.position = new object[3];
+      jason.position[0] = 0; jason.position[1] = 0; jason.position[2] = 0;
+      jason.rotation = new object[3];
+      jason.rotation[0] = 0; jason.rotation[1] = 0; jason.rotation[2] = 0;
+      jason.quaternion = new object[4];
+      jason.quaternion[0] = 0; jason.quaternion[1] = 0; jason.quaternion[2] = 0; jason.quaternion[3] = 0;
+      jason.scale = new object[3];
+      jason.scale[0] = 1; jason.scale[1] = 1; jason.scale[2] = 1;
+      jason.visible = true;
+      jason.castShadow = true;
+      jason.receiveShadow = false;
+      jason.doubleSided = true;
+
+
+      //populate geometry object
+      jason.geometry.metadata = new ExpandoObject();
+      jason.geometry.metadata.formatVersion = 3.1;
+      jason.geometry.metadata.generatedBy = "GHva3c 0.01 Exporter";
+      jason.geometry.metadata.vertices = mesh.Vertices.Count;
+      jason.geometry.metadata.faces = mesh.Faces.Count;
+      jason.geometry.metadata.normals = 0;
+      jason.geometry.metadata.colors = 0;
+      jason.geometry.metadata.uvs = 0;
+      jason.geometry.metadata.materials = 0;
+      jason.geometry.metadata.morphTargets = 0;
+      jason.geometry.metadata.bones = 0;
+
+      jason.geometry.scale = 1.000;
+      jason.geometry.materials = new object[0];
+      jason.geometry.vertices = new object[mesh.Vertices.Count * 3];
+      jason.geometry.morphTargets = new object[0];
+      jason.geometry.normals = new object[0];
+      jason.geometry.colors = new object[0];
+      jason.geometry.uvs = new object[0];
+      jason.geometry.faces = new object[mesh.Faces.Count * 3];
+      jason.geometry.bones = new object[0];
+      jason.geometry.skinIndices = new object[0];
+      jason.geometry.skinWeights = new object[0];
+      jason.geometry.animation = new ExpandoObject();
+
+      //populate vertices
+      int counter = 0;
+      int i = 0;
+      foreach( var v in mesh.Vertices )
+      {
+        jason.geometry.vertices[counter++] = mesh.Vertices[i].X;
+        jason.geometry.vertices[counter++] = mesh.Vertices[i].Y;
+        jason.geometry.vertices[counter++] = mesh.Vertices[i].Z;
+        i++;
+      }
+
+      //populate faces
+      counter = 0;
+      i = 0;
+      foreach( var f in mesh.Faces )
+      {
+        jason.geometry.faces[counter++] = mesh.Faces[i].A;
+        jason.geometry.faces[counter++] = mesh.Faces[i].B;
+        jason.geometry.faces[counter++] = mesh.Faces[i].C;
+        i++;
+      }
+
+      return JsonConvert.SerializeObject( jason );
+#endif // USE_DYNAMIC_JSON
+
+      //_scene.metadata.
     }
 
     public void OnPolymesh( PolymeshTopology polymesh )
     {
-      Debug.WriteLine( string.Format( 
+      Debug.WriteLine( string.Format(
         "    OnPolymesh: {0} points, {1} facets, {2} normals {3}",
         polymesh.NumberOfPoints,
-        polymesh.NumberOfFacets, 
+        polymesh.NumberOfFacets,
         polymesh.NumberOfNormals,
         polymesh.DistributionOfNormals ) );
 
       IList<XYZ> pts = polymesh.GetPoints();
 
-      int i = 0, v1, v2, v3, material_index = -1;
+      int i = 0, v1, v2, v3;
 
-      foreach( PolymeshFacet facet 
+      foreach( PolymeshFacet facet
         in polymesh.GetFacets() )
       {
-        Debug.WriteLine( string.Format( 
-          "      {0}: {1} {2} {3}", i++, 
+        Debug.WriteLine( string.Format(
+          "      {0}: {1} {2} {3}", i++,
           facet.V1, facet.V2, facet.V3 ) );
 
         v1 = _vertices.AddVertex( new PointInt(
           pts[facet.V1] ) );
-        
+
         v2 = _vertices.AddVertex( new PointInt(
           pts[facet.V2] ) );
 
-        v3 = _vertices.AddVertex( new PointInt( 
+        v3 = _vertices.AddVertex( new PointInt(
           pts[facet.V2] ) );
 
-        _faces.Add( new FaceMaterial( 
-          v1, v2, v3, material_index ) );
+        _faces.Add( new FaceMaterial(
+          v1, v2, v3, _currentMaterialUid ) );
       }
 
 
