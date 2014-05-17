@@ -32,39 +32,58 @@ namespace RvtVa3c
       public int morphTargets { get; set; } //  0
     }
 
+    public class SceneMaterialMetadata
+    {
+        [DataMember]
+        public string Version { get; set; }
+        [DataMember]
+        public string type { get; set;}
+        [DataMember]
+        public string generator { get; set; }
+    }
     public class SceneMaterial
     {
+        [DataMember]
+        public SceneMaterialMetadata metadata { get; set; }
+
+        [DataMember]
+        public String type { get; set; } //MeshPhongMaterial
+       
       [DataMember]
-      public double DbgColor { get; set; } // 15597568,
+      public int color { get; set; } // 16777215,
+         [DataMember]
+        public int ambient { get; set; } //16777215
       [DataMember]
-      public double DbgIndex { get; set; } // 1,
+      public int emissive { get; set; } // 1,
       [DataMember]
-      public double DbgName { get; set; } // "HMI- Polished Al",
+      public int specular { get; set; } //1118481
       [DataMember]
-      public double blending { get; set; } // "NormalBlending",
+      public int shininess { get; set; } // 30,
       [DataMember]
-      public double colorAmbient { get; set; } // [0.3513725571538888, 0.3513725571538888, 0.3513725571538888],
+      public int opacity { get; set; } // 1
       [DataMember]
-      public double colorDiffuse { get; set; } // [0.3513725571538888, 0.3513725571538888, 0.3513725571538888],
+      public bool transparent { get; set; } // false
       [DataMember]
-      public double colorSpecular { get; set; } // [0.4490196108818054, 0.4490196108818054, 0.4490196108818054],
-      [DataMember]
-      public double depthTest { get; set; } // true,
-      [DataMember]
-      public double depthWrite { get; set; } // true,
-      [DataMember]
-      public double shading { get; set; } // "Lambert",
-      [DataMember]
-      public double specularCoef { get; set; } // 50,
-      [DataMember]
-      public double transparency { get; set; } // 1.0,
-      [DataMember]
-      public double transparent { get; set; } // false,
-      [DataMember]
-      public double vertexColors { get; set; } // false
-      [DataMember]
-      public string Id { get; set; } // Revit Unique Id
+      public bool wireframe { get; set; } // false
+    
     }
+
+          //  MeshPhongMaterial from https://github.com/mrdoob/three.js/wiki/JSON-Material-format-4
+
+    //{
+    //"metadata": {
+    //    "version": 4.2,
+    //    "type": "material",
+    //    "generator": "MaterialExporter"
+    //},
+    //"type": "MeshPhongMaterial",
+    //"color": 16777215,
+    //"ambient": 16777215,
+    //"emissive": 0,
+    //"specular": 1118481,
+    //"shininess": 30,
+    //"opacity": 1,
+    //"transparent": false,
 
     [DataContract]
     public class Va3cObject
@@ -97,18 +116,9 @@ namespace RvtVa3c
         public bool doubleSided { get; set; }
     }
 
-    // https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3
-
-    // for the faces, we will use
-    // triangle with material
-    // 00 00 00 10 = 2
-    // 2, [vertex_index, vertex_index, vertex_index], [material_index]
-    // e.g.:
-    //
-    //2, 0,1,2, 0,
-
-    [DataMember]
-    public SceneMetadata metadata { get; set; }
+      [DataContract]
+    public class Va3cGeometry
+      {
     [DataMember]
     public double scale { get; set; }
     [DataMember]
@@ -122,9 +132,27 @@ namespace RvtVa3c
     // "uvs": [[]],
     [DataMember]
     public List<int> faces { get; set; } // indices into Vertices + Materials
+ 
+      }
+    // https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3
+
+    // for the faces, we will use
+    // triangle with material
+    // 00 00 00 10 = 2
+    // 2, [vertex_index, vertex_index, vertex_index], [material_index]
+    // e.g.:
+    //
+    //2, 0,1,2, 0,
 
     [DataMember]
-    public List<Va3cObject> objects { get; set; }
+    public SceneMetadata metadata { get; set; }
+  
+
+    [DataMember]
+    public Dictionary<string,Va3cObject> objects { get; set; }
+
+    [DataMember]
+    public Dictionary<string, Va3cGeometry> geometries;
   }
 
 
