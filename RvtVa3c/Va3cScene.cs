@@ -17,19 +17,19 @@ namespace RvtVa3c
       [DataMember]
       public string generatedBy { get; set; } //  "Blender 2.62 Exporter",
       [DataMember]
-      public double vertices { get; set; } //  770,
+      public int vertices { get; set; } //  770,
       [DataMember]
-      public double faces { get; set; } //  768,
+      public int faces { get; set; } //  768,
       [DataMember]
-      public double normals { get; set; } //  770,
+      public int normals { get; set; } //  770,
       [DataMember]
-      public double colors { get; set; } //  0,
+      public int colors { get; set; } //  0,
       [DataMember]
-      public double uvs { get; set; } //  0,
+      public int uvs { get; set; } //  0,
       [DataMember]
-      public double materials { get; set; } //  1,
+      public int materials { get; set; } //  1,
       [DataMember]
-      public double morphTargets { get; set; } //  0
+      public int morphTargets { get; set; } //  0
     }
 
     public class SceneMaterial
@@ -66,6 +66,37 @@ namespace RvtVa3c
       public string Id { get; set; } // Revit Unique Id
     }
 
+    [DataContract]
+    public class Va3cObject
+    {
+        [DataMember]
+        public String geometry { get; set; }
+
+        [DataMember]
+        public List<double> position { get; set; }
+
+        [DataMember]
+        public List<double> rotation { get; set; }
+
+        [DataMember]
+        public List<double> quaternion { get; set; }
+
+        [DataMember]
+        public List<double> scale { get; set; }
+
+        [DataMember]
+        public bool visible { get; set; }
+
+        [DataMember]
+        public bool castShadow { get; set; }
+
+        [DataMember]
+        public bool receiveShadow { get; set; }
+
+        [DataMember]
+        public bool doubleSided { get; set; }
+    }
+
     // https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3
 
     // for the faces, we will use
@@ -77,19 +108,24 @@ namespace RvtVa3c
     //2, 0,1,2, 0,
 
     [DataMember]
-    public SceneMetadata Metadata { get; set; }
+    public SceneMetadata metadata { get; set; }
     [DataMember]
-    public double Scale { get; set; }
+    public double scale { get; set; }
     [DataMember]
-    public List<SceneMaterial> Materials { get; set; }
+    public List<SceneMaterial> materials { get; set; }
     [DataMember]
-    public List<double> Vertices { get; set; } // XYZ list
+    public List<double> vertices { get; set; } // XYZ list
     // "morphTargets": [],
     [DataMember]
-    public List<double> Normals { get; set; } // XYZ list
+    public List<double> normals { get; set; } // XYZ list
     // "colors": [],
     // "uvs": [[]],
     [DataMember]
-    public List<int> Faces { get; set; } // indices into Vertices + Materials
+    public List<int> faces { get; set; } // indices into Vertices + Materials
+
+    [DataMember]
+    public List<Va3cObject> objects { get; set; }
   }
+
+
 }
