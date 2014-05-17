@@ -325,8 +325,12 @@ namespace RvtVa3c
 
     public void Finish()
     {
-      // Populate scene
+      // Finish populating scene
+
+      _scene.metadata.materials = _materials.Count;
+
       // Serialise scene
+
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
