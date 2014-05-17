@@ -42,7 +42,7 @@ namespace RvtVa3c
       public int morphTargets { get; set; } //  0
     }
 
-    public class SceneMaterialMetadata
+    public class Va3cMaterialMetadata
     {
       [DataMember]
       public double version { get; set; }
@@ -54,10 +54,13 @@ namespace RvtVa3c
       public string generator { get; set; }
     }
 
-    public class SceneMaterial
+    public class Va3cMaterial
     {
       [DataMember]
-      public SceneMaterialMetadata metadata { get; set; }
+      public Va3cMaterialMetadata metadata { get; set; }
+
+      [DataMember]
+      public string uuid { get; set; }
 
       [DataMember]
       public string type { get; set; } // MeshPhongMaterial
@@ -108,41 +111,61 @@ namespace RvtVa3c
     public class Va3cObject
     {
       [DataMember]
+      public string uuid { get; set; }
+
+      [DataMember]
+      public string type { get; set; }
+
+      [DataMember]
+      public double[] matrix { get; set; }
+
+      [DataMember]
+      public List<Va3cObject> children { get; set; }
+
+      // The following are only on the children:
+
+      [DataMember]
       public string geometry { get; set; }
 
       [DataMember]
-      public List<double> position { get; set; }
+      public string name { get; set; }
 
       [DataMember]
-      public List<double> rotation { get; set; }
+      public string material { get; set; }
 
-      [DataMember]
-      public List<double> quaternion { get; set; }
+      //[DataMember]
+      //public List<double> position { get; set; }
 
-      [DataMember]
-      public List<double> scale { get; set; }
+      //[DataMember]
+      //public List<double> rotation { get; set; }
 
-      [DataMember]
-      public bool visible { get; set; }
+      //[DataMember]
+      //public List<double> quaternion { get; set; }
 
-      [DataMember]
-      public bool castShadow { get; set; }
+      //[DataMember]
+      //public List<double> scale { get; set; }
 
-      [DataMember]
-      public bool receiveShadow { get; set; }
+      //[DataMember]
+      //public bool visible { get; set; }
 
-      [DataMember]
-      public bool doubleSided { get; set; }
+      //[DataMember]
+      //public bool castShadow { get; set; }
+
+      //[DataMember]
+      //public bool receiveShadow { get; set; }
+
+      //[DataMember]
+      //public bool doubleSided { get; set; }
     }
 
     [DataContract]
     public class Va3cGeometry
     {
-      [DataMember]
-      public double scale { get; set; }
+      //[DataMember]
+      //public double scale { get; set; }
 
       [DataMember]
-      public List<SceneMaterial> materials { get; set; }
+      public List<Va3cMaterial> materials { get; set; }
       
       [DataMember]
       public List<double> vertices { get; set; } // XYZ list
@@ -172,10 +195,16 @@ namespace RvtVa3c
     [DataMember]
     public SceneMetadata metadata { get; set; }
 
-    [DataMember]
-    public Dictionary<string, Va3cObject> objects { get; set; }
+    //[DataMember]
+    //public Dictionary<string, Va3cObject> objects { get; set; }
+
+    [DataMember(Name="object")]
+    public Va3cObject obj { get; set; }
 
     [DataMember]
-    public Dictionary<string, Va3cGeometry> geometries;
+    public List<Va3cGeometry> geometries;
+
+    [DataMember]
+    public List<Va3cMaterial> materials;
   }
 }

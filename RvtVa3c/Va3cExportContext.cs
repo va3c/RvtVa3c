@@ -216,7 +216,7 @@ namespace RvtVa3c
     //VertexLookupXyz _vertices;
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
-    Dictionary<string, Va3cScene.SceneMaterial> _materials;
+    Dictionary<string, Va3cScene.Va3cMaterial> _materials;
 
     Stack<ElementId> _elementStack = new Stack<ElementId>();
 
@@ -274,14 +274,15 @@ namespace RvtVa3c
         Material material = _doc.GetElement(
           uidMaterial ) as Material;
 
-        Va3cScene.SceneMaterial m
-          = new Va3cScene.SceneMaterial();
+        Va3cScene.Va3cMaterial m
+          = new Va3cScene.Va3cMaterial();
 
-        m.metadata = new Va3cScene.SceneMaterialMetadata();
+        m.metadata = new Va3cScene.Va3cMaterialMetadata();
         m.metadata.type = "material";
         m.metadata.version = 4.2;
-        m.metadata.generator = "va3c";
+        m.metadata.generator = "RvtVa3c 2015.0.0.0";
 
+        m.uuid = uidMaterial;
         m.type = "MeshPhongMaterial";
         m.color = Util.ColorToInt( material.Color );
         m.ambient = m.color;
@@ -305,7 +306,7 @@ namespace RvtVa3c
     public bool Start()
     {
       _faces = new List<FaceMaterial>();
-      _materials = new Dictionary<string, Va3cScene.SceneMaterial>();
+      _materials = new Dictionary<string, Va3cScene.Va3cMaterial>();
       _vertices = new VertexLookupInt();
       transformationStack.Push( Transform.Identity );
 
@@ -317,8 +318,8 @@ namespace RvtVa3c
       _scene.metadata.formatVersion = 3;
       _scene.metadata.generatedBy = "RvtVa3c";
       _scene.metadata.materials = 0;
-      _scene.geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
-      _scene.objects = new Dictionary<string, Va3cScene.Va3cObject>();
+      _scene.geometries = new List<Va3cScene.Va3cGeometry>();
+      _scene.obj = new Va3cScene.Va3cObject();
 
       return true;
     }
