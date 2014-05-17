@@ -306,10 +306,19 @@ namespace RvtVa3c
     {
       _faces = new List<FaceMaterial>();
       _materials = new Dictionary<string, Va3cScene.SceneMaterial>();
-      _scene = new Va3cScene();
-      //_scene = new ExpandoObject();
       _vertices = new VertexLookupInt();
       transformationStack.Push( Transform.Identity );
+
+      _scene = new Va3cScene();
+      //_scene = new ExpandoObject();
+
+      _scene.metadata.colors = 0;
+      _scene.metadata.faces = 0;
+      _scene.metadata.formatVersion = 3;
+      _scene.metadata.generatedBy = "RvtVa3c";
+      _scene.metadata.materials = 0;
+      _scene.geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
+      _scene.objects = new Dictionary<string, Va3cScene.Va3cObject>();
 
       return true;
     }
