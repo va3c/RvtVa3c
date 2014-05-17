@@ -9,6 +9,7 @@ using System.Text;
 using Autodesk.Revit.Utility;
 using System.Xml.Linq;
 using System.Dynamic;
+using System.Runtime.Serialization.Json;
 #endregion
 
 namespace RvtVa3c
@@ -217,7 +218,12 @@ namespace RvtVa3c
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
-    Va3cScene.Va3cObject _currentObject;
+    
+    Dictionary<string, Va3cScene.Va3cObject> _objects;
+    Dictionary<string, Va3cScene.Va3cGeometry> _geometries;
+
+    Va3cScene.Va3cObject _currentObject = null;
+    Va3cScene.Va3cGeometry _currentGeometry = null;
     
     Stack<ElementId> _elementStack = new Stack<ElementId>();
     Stack<Transform> transformationStack = new Stack<Transform>();
@@ -308,18 +314,26 @@ namespace RvtVa3c
       _faces = new List<FaceMaterial>();
       _materials = new Dictionary<string, Va3cScene.Va3cMaterial>();
       _vertices = new VertexLookupInt();
+      _geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
+      _objects = new Dictionary<string, Va3cScene.Va3cObject>();
+
       transformationStack.Push( Transform.Identity );
 
       _scene = new Va3cScene();
       //_scene = new ExpandoObject();
 
+      _scene.metadata = new Va3cScene.SceneMetadata();
       _scene.metadata.colors = 0;
       _scene.metadata.faces = 0;
       _scene.metadata.formatVersion = 3;
-      _scene.metadata.generatedBy = "RvtVa3c";
+      _scene.metadata.generatedBy = "RvtVa3c Revit va3c exporter";
       _scene.metadata.materials = 0;
       _scene.geometries = new List<Va3cScene.Va3cGeometry>();
+
       _scene.obj = new Va3cScene.Va3cObject();
+      _scene.obj.uuid = _doc.ActiveView.UniqueId;
+      _scene.obj.type = "Scene";
+      _scene.obj.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 
       return true;
     }
@@ -329,8 +343,23 @@ namespace RvtVa3c
       // Finish populating scene
 
       _scene.metadata.materials = _materials.Count;
+      _scene.materials = _materials.Values.ToList();
+
+      _scene.geometries = _geometries.Values.ToList();
+
+      _scene.obj.children = _objects.Values.ToList();
 
       // Serialise scene
+
+			using( FileStream stream 
+        = File.OpenWrite( "C:/tmp/test.js" ) )
+      {
+        DataContractJsonSerializer serialiser
+          = new DataContractJsonSerializer(
+            typeof( Va3cScene ) );
+
+        serialiser.WriteObject( stream, _scene );
+      }
 
 
 #if USE_DYNAMIC_JSON
@@ -365,7 +394,7 @@ namespace RvtVa3c
       //populate geometry object
       jason.geometry.metadata = new ExpandoObject();
       jason.geometry.metadata.formatVersion = 3.1;
-      jason.geometry.metadata.generatedBy = "GHva3c 0.01 Exporter";
+      jason.geometry.metadata.generatedBy = "RvtVa3c Revit va3c exporter";
       jason.geometry.metadata.vertices = mesh.Vertices.Count;
       jason.geometry.metadata.faces = mesh.Faces.Count;
       jason.geometry.metadata.normals = 0;
@@ -445,10 +474,11 @@ namespace RvtVa3c
         v3 = _vertices.AddVertex( new PointInt(
           pts[facet.V2] ) );
 
-        _faces.Add( new FaceMaterial(
-          v1, v2, v3, _currentMaterialUid ) );
+        _currentGeometry.faces.Add( 0 );
+        _currentGeometry.faces.Add( v1 );
+        _currentGeometry.faces.Add( v2 );
+        _currentGeometry.faces.Add( v3 );
       }
-      //_currentObject.
     }
 
     public void OnMaterial( MaterialNode node )
@@ -500,7 +530,11 @@ namespace RvtVa3c
       ElementId elementId )
     {
       Element e = _doc.GetElement( elementId );
-      Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
+
+      Debug.WriteLine( string.Format(
+        "OnElementBegin: id {0} category {1} name {2}",
+        elementId.IntegerValue, e.Category.Name, e.Name ) );
+
       _elementStack.Push( elementId );
 
       ICollection<ElementId> idsMaterialGeometry = e.GetMaterialIds( false );
@@ -516,9 +550,18 @@ namespace RvtVa3c
       _currentObject.name = Util.ElementDescription( e );
       _currentObject.geometry = e.UniqueId;
       _currentObject.material = _currentMaterialUid;
-      _currentObject.matrix = null;
-      _currentObject.type = "element";
+      _currentObject.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+      _currentObject.type = "mesh";
       _currentObject.uuid = e.UniqueId;
+
+      _currentGeometry = new Va3cScene.Va3cGeometry();
+
+      _currentGeometry.uuid = e.UniqueId;
+      _currentGeometry.faces = new List<int>();
+      _currentGeometry.vertices = new List<int>();
+      _currentGeometry.normals = new List<double>();
+
+      _vertices.Clear();
 
       return RenderNodeAction.Proceed;
     }
@@ -531,9 +574,13 @@ namespace RvtVa3c
 
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
 
-      _scene.obj.children.Add( _currentObject );
+      _currentObject.geometry = _currentGeometry.uuid;
 
+      _objects.Add( _currentObject.uuid, _currentObject );
       _currentObject = null;
+
+      _geometries.Add( _currentGeometry.uuid, _currentGeometry );
+      _currentGeometry = null;
 
       _elementStack.Pop();
     }

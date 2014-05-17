@@ -13,14 +13,14 @@ namespace RvtVa3c
   {
     public class SceneMetadata
     {
-      [DataMember] public double formatVersion { get; set; } //  3,
-      [DataMember] public string generatedBy { get; set; } //  "Blender 2.62 Exporter",
-      [DataMember] public int vertices { get; set; } //  770,
-      [DataMember] public int faces { get; set; } //  768,
-      [DataMember] public int normals { get; set; } //  770,
-      [DataMember] public int colors { get; set; } //  0,
-      [DataMember] public int uvs { get; set; } //  0,
-      [DataMember] public int materials { get; set; } //  1,
+      [DataMember] public double formatVersion { get; set; } //  3
+      [DataMember] public string generatedBy { get; set; } //  "RvtVa3c Revit va3c exporter"
+      [DataMember] public int vertices { get; set; } //  770
+      [DataMember] public int faces { get; set; } //  768
+      [DataMember] public int normals { get; set; } //  770
+      [DataMember] public int colors { get; set; } //  0
+      [DataMember] public int uvs { get; set; } //  0
+      [DataMember] public int materials { get; set; } //  1
       [DataMember] public int morphTargets { get; set; } //  0
     }
 
@@ -36,28 +36,28 @@ namespace RvtVa3c
       [DataMember] public Va3cMaterialMetadata metadata { get; set; }
       [DataMember] public string uuid { get; set; }
       [DataMember] public string type { get; set; } // MeshPhongMaterial
-      [DataMember] public int color { get; set; } // 16777215,
+      [DataMember] public int color { get; set; } // 16777215
       [DataMember] public int ambient { get; set; } //16777215
-      [DataMember] public int emissive { get; set; } // 1,
+      [DataMember] public int emissive { get; set; } // 1
       [DataMember] public int specular { get; set; } //1118481
-      [DataMember] public int shininess { get; set; } // 30,
+      [DataMember] public int shininess { get; set; } // 30
       [DataMember] public int opacity { get; set; } // 1
       [DataMember] public bool transparent { get; set; } // false
       [DataMember] public bool wireframe { get; set; } // false
 
-      //"DbgColor" : 15658734,
-      //"DbgIndex" : 0,
-      //"DbgName" : "Material",
-      //"blending" : "NormalBlending",
-      //"colorAmbient" : [0.6400000190734865, 0.10179081114814892, 0.126246120426746],
-      //"colorDiffuse" : [0.6400000190734865, 0.10179081114814892, 0.126246120426746],
-      //"colorSpecular" : [0.5, 0.5, 0.5],
-      //"depthTest" : true,
-      //"depthWrite" : true,
-      //"shading" : "Lambert",
-      //"specularCoef" : 50,
-      //"transparency" : 1.0,
-      //"transparent" : false,
+      //"DbgColor" : 15658734
+      //"DbgIndex" : 0
+      //"DbgName" : "Material"
+      //"blending" : "NormalBlending"
+      //"colorAmbient" : [0.6400000190734865, 0.10179081114814892, 0.126246120426746]
+      //"colorDiffuse" : [0.6400000190734865, 0.10179081114814892, 0.126246120426746]
+      //"colorSpecular" : [0.5, 0.5, 0.5]
+      //"depthTest" : true
+      //"depthWrite" : true
+      //"shading" : "Lambert"
+      //"specularCoef" : 50
+      //"transparency" : 1.0
+      //"transparent" : false
       //"vertexColors" : false
     }
 
@@ -65,20 +65,35 @@ namespace RvtVa3c
 
     //{
     //"metadata": {
-    //    "version": 4.2,
-    //    "type": "material",
+    //    "version": 4.2
+    //    "type": "material"
     //    "generator": "MaterialExporter"
-    //},
-    //"type": "MeshPhongMaterial",
-    //"color": 16777215,
-    //"ambient": 16777215,
-    //"emissive": 0,
-    //"specular": 1118481,
-    //"shininess": 30,
-    //"opacity": 1,
-    //"transparent": false,
+    //}
+    //"type": "MeshPhongMaterial"
+    //"color": 16777215
+    //"ambient": 16777215
+    //"emissive": 0
+    //"specular": 1118481
+    //"shininess": 30
+    //"opacity": 1
+    //"transparent": false
 
-    [DataContract] public class Va3cObject
+    [DataContract]
+    public class Va3cGeometry
+    {
+      [DataMember] public string uuid { get; set; }
+      //[DataMember] public double scale { get; set; }
+      [DataMember]       public List<Va3cMaterial> materials { get; set; }
+      [DataMember] public List<int> vertices { get; set; } // millimetres
+      // "morphTargets": []
+      [DataMember] public List<double> normals { get; set; }
+      // "colors": []
+      // "uvs": [[]]
+      [DataMember] public List<int> faces { get; set; } // indices into Vertices + Materials
+    }
+
+    [DataContract]
+    public class Va3cObject
     {
       [DataMember] public string uuid { get; set; }
       [DataMember] public string type { get; set; }
@@ -99,18 +114,6 @@ namespace RvtVa3c
       //[DataMember] public bool doubleSided { get; set; }
     }
 
-    [DataContract] public class Va3cGeometry
-    {
-      //[DataMember] public double scale { get; set; }
-      [DataMember] public List<Va3cMaterial> materials { get; set; }
-      [DataMember] public List<double> vertices { get; set; } // XYZ list
-      // "morphTargets": [],
-      [DataMember] public List<double> normals { get; set; } // XYZ list
-      // "colors": [],
-      // "uvs": [[]],
-      [DataMember] public List<int> faces { get; set; } // indices into Vertices + Materials
-    }
-
     // https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3
 
     // for the faces, we will use
@@ -118,7 +121,7 @@ namespace RvtVa3c
     // 00 00 00 10 = 2
     // 2, [vertex_index, vertex_index, vertex_index], [material_index]     // e.g.:
     //
-    //2, 0,1,2, 0,
+    //2, 0,1,2, 0
 
     [DataMember] public SceneMetadata metadata { get; set; }
     //[DataMember] public Dictionary<string, Va3cObject> objects { get; set; }
