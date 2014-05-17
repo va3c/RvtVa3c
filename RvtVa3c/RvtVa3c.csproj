@@ -64,7 +64,7 @@
     <Compile Include="Util.cs" />
     <Compile Include="Va3cExportContext.cs" />
     <Compile Include="Va3cFace.cs" />
-    <Compile Include="Va3cMaterial.cs" />
+    <Compile Include="MattMasonMaterial.cs" />
     <Compile Include="Va3cScene.cs" />
   </ItemGroup>
   <ItemGroup>

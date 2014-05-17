@@ -358,37 +358,6 @@ namespace RvtVa3c
       //polymeshToMaterialId.Add( CurrentPolymeshIndex, currentMaterialId );
     }
 
-    string GetElementName( Element element, string defaultPrefix )
-    {
-      //make it an NCName
-
-      //Element element = CurrentElement;
-      if( element != null )
-      {
-        string name = element.Name;
-        name = name.Replace( " ", "" );
-        name = name.Replace( "\"", "in" );
-        name = name.Replace( "&", "" );
-        name = name.Replace( ":", "_" );
-        name = name.Replace( ",", "_" );
-        name = name.Replace( "/", "_" );
-        name = name.Replace( "(", "_" );
-        name = name.Replace( ")", "_" );
-        name = name.Replace( "@", "_" );
-        name = name.Replace( "\\", "_" );
-        name = name.Replace( "/", "_" );
-
-        name = name.Replace( "'", "ft" );
-        name = name.Replace( "%20", "" );
-        name = name.Replace( "%", "_" );
-        name = name.Replace( "[", "_" );
-        name = name.Replace( "]", "_" );
-        if( char.IsNumber( name[0] ) ) name = defaultPrefix + name;
-        return name;
-      }
-      return ""; //default name
-    }
-
     public void OnMaterial( MaterialNode node )
     {
       // OnMaterial method can be invoked for every single out-coming mesh
@@ -397,41 +366,6 @@ namespace RvtVa3c
       // when the material actually changes.
 
       currentMaterialId = node.MaterialId;
-    }
-
-    string GetMaterialName( ElementId materialId )
-    {
-      Material material = _doc.GetElement( materialId ) as Material;
-      if( material != null )
-      {
-        return GetElementName( material, "Material" );
-      }
-
-      return ""; //default material name
-    }
-
-    bool IsMaterialValid( ElementId materialId )
-    {
-      if( materialId.IntegerValue < 0 ) return false;
-      Material material = _doc.GetElement( materialId ) as Material;
-      if( material != null )
-        return true;
-
-      return false;
-    }
-
-    XElement extractMaterialTexture( Material mat, XElement profileNode )
-    {
-      // we need to figure out if we can get at the texture... if we can, then pull it out to the target folder.
-      AppearanceAssetElement assetElement = _doc.GetElement( mat.AppearanceAssetId ) as AppearanceAssetElement;
-
-      if( assetElement == null ) return null;
-
-      Asset asset = assetElement.GetRenderingAsset();
-
-      Va3cMaterial cMat = new Va3cMaterial( mat );
-
-      return null;
     }
 
     public bool IsCanceled()
@@ -466,17 +400,20 @@ namespace RvtVa3c
       // Note: This method is invoked even for a view that was skipped.
     }
 
-    public RenderNodeAction OnElementBegin( 
+    public RenderNodeAction OnElementBegin(
       ElementId elementId )
     {
       Element e = _doc.GetElement( elementId );
       Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
       elementStack.Push( elementId );
 
+      ICollection<ElementId> idsMaterialGeometry = e.GetMaterialIds( false );
+      ICollection<ElementId> idsMaterialPaint = e.GetMaterialIds( true );
+
       return RenderNodeAction.Proceed;
     }
 
-    public void OnElementEnd( 
+    public void OnElementEnd(
       ElementId elementId )
     {
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
@@ -539,6 +476,54 @@ namespace RvtVa3c
     }
 
     #region Write Collada XML methods
+    string GetElementName( Element element, string defaultPrefix )
+    {
+      //make it an NCName
+
+      //Element element = CurrentElement;
+      if( element != null )
+      {
+        string name = element.Name;
+        name = name.Replace( " ", "" );
+        name = name.Replace( "\"", "in" );
+        name = name.Replace( "&", "" );
+        name = name.Replace( ":", "_" );
+        name = name.Replace( ",", "_" );
+        name = name.Replace( "/", "_" );
+        name = name.Replace( "(", "_" );
+        name = name.Replace( ")", "_" );
+        name = name.Replace( "@", "_" );
+        name = name.Replace( "\\", "_" );
+        name = name.Replace( "/", "_" );
+
+        name = name.Replace( "'", "ft" );
+        name = name.Replace( "%20", "" );
+        name = name.Replace( "%", "_" );
+        name = name.Replace( "[", "_" );
+        name = name.Replace( "]", "_" );
+        if( char.IsNumber( name[0] ) ) name = defaultPrefix + name;
+        return name;
+      }
+      return ""; //default name
+    }
+
+    string GetMaterialName( ElementId materialId )
+    {
+      Material material = _doc.GetElement( materialId ) as Material;
+      if( material != null )
+      {
+        return GetElementName( material, "Material" );
+      }
+      return ""; //default material name
+    }
+
+    bool IsMaterialValid( ElementId materialId )
+    {
+      if( materialId.IntegerValue < 0 ) return false;
+      Material material = _doc.GetElement( materialId ) as Material;
+      return material != null;
+    }
+
     void WriteXmlColladaBegin()
     {
       _ns = "http://www.collada.org/2005/11/COLLADASchema";
@@ -1125,6 +1110,20 @@ namespace RvtVa3c
       ////streamWriter.Write( "<scene>\n" );
       ////streamWriter.Write( "<instance_visual_scene url=\"#Revit_project\"/>\n" );
       ////streamWriter.Write( "</scene>\n" );
+    }
+
+    XElement extractMaterialTexture( Material mat, XElement profileNode )
+    {
+      // we need to figure out if we can get at the texture... if we can, then pull it out to the target folder.
+      AppearanceAssetElement assetElement = _doc.GetElement( mat.AppearanceAssetId ) as AppearanceAssetElement;
+
+      if( assetElement == null ) return null;
+
+      Asset asset = assetElement.GetRenderingAsset();
+
+      //MattMasonMaterial cMat = new MattMasonMaterial( mat );
+
+      return null;
     }
     #endregion // Write Collada XML methods
   }
