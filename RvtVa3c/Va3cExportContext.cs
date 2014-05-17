@@ -214,14 +214,13 @@ namespace RvtVa3c
     //VertexLookupXyz _vertices;
     VertexLookupInt _vertices;
     List<FaceMaterial> _faces;
-    List<Va3cScene.SceneMaterial> _materials;
-    Dictionary<ElementId, int> _materialIndices;
+    Dictionary<string, Va3cScene.SceneMaterial> _materials;
 
     Stack<ElementId> _elementStack = new Stack<ElementId>();
 
     Stack<Transform> transformationStack = new Stack<Transform>();
 
-    int _currentMaterialIndex;
+    string _currentMaterialUid;
 
     Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
     
@@ -266,16 +265,12 @@ namespace RvtVa3c
     /// <summary>
     /// Set the current material
     /// </summary>
-    void SetCurrentMaterial( ElementId idMaterial )
+    void SetCurrentMaterial( string uidMaterial )
     {
-      if( _materialIndices.ContainsKey( idMaterial ) )
-      {
-        _currentMaterialIndex = _materialIndices[idMaterial];
-      }
-      else
+      if( !_materials.ContainsKey( uidMaterial ) )
       {
         Material material = _doc.GetElement( 
-          idMaterial ) as Material;
+          uidMaterial ) as Material;
 
         Va3cScene.SceneMaterial m 
           = new Va3cScene.SceneMaterial();
@@ -292,11 +287,12 @@ namespace RvtVa3c
         m.specular = m.color;
         m.shininess = material.Shininess; // todo: does this need scaling to e.g. [0,100]?
         m.opacity = 128 - material.Transparency;
+        m.transparent = false;
+        m.wireframe = false;
 
-        _currentMaterialIndex = _materials.Count;
-
-        _materials.Add( m );
+        _materials.Add( uidMaterial, m );
       }
+      _currentMaterialUid = uidMaterial;
     }
 
     public Va3cExportContext( Document document )
@@ -307,8 +303,7 @@ namespace RvtVa3c
     public bool Start()
     {
       _faces = new List<FaceMaterial>();
-      _materials = new List<Va3cScene.SceneMaterial>();
-      _materialIndices = new Dictionary<ElementId, int>();
+      _materials = new Dictionary<string, Va3cScene.SceneMaterial>();
       _scene = new Va3cScene();
       _vertices = new VertexLookupInt();
       transformationStack.Push( Transform.Identity );
@@ -394,7 +389,8 @@ namespace RvtVa3c
       // beneficial to store the current material and only get its attributes
       // when the material actually changes.
 
-      SetCurrentMaterial( node.MaterialId );
+      Element m = _doc.GetElement( node.MaterialId );
+      SetCurrentMaterial( m.UniqueId );
     }
 
     public bool IsCanceled()
@@ -441,7 +437,7 @@ namespace RvtVa3c
 
       if( null != e.Category )
       {
-        SetCurrentMaterial( e.Category.Material.Id );
+        SetCurrentMaterial( e.Category.Material.UniqueId );
       }
       return RenderNodeAction.Proceed;
     }
