@@ -6,17 +6,17 @@ using Autodesk.Revit.DB;
 
 namespace RvtVa3c
 {
-  internal class Va3cFace
+  class Va3cFace
   {
-    internal Element Element { get; set; }
-    internal int CategoryId { get; set; }
-    internal int ElementId { get; set; }
-    internal uint FaceId { get; set; }
-    internal ElementId MaterialId { get; set; }
+    ElementId ElementId { get; set; }
+    int CategoryId { get; set; }
+    ElementId MaterialId { get; set; }
 
-    internal Va3cFace( Element e, uint id, ElementId material )
+    Va3cFace( 
+      Element e, 
+      ElementId material )
     {
-      Element = e;
+      ElementId = e.Id;
       if( e.Category != null )
       {
         CategoryId = e.Category.Id.IntegerValue;
@@ -25,9 +25,7 @@ namespace RvtVa3c
       {
         CategoryId = -1;
       }
-      FaceId = id;
       MaterialId = material;
-      ElementId = e.Id.IntegerValue;
     }
   }
 }

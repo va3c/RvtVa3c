@@ -15,35 +15,48 @@ namespace RvtVa3c
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
-    public Result Execute( ExternalCommandData commandData, ref string message, ElementSet elements )
+    void ExportView3D( View3D view3d )
     {
-      UIApplication uiapp = commandData.Application;
-      UIDocument uidoc = uiapp.ActiveUIDocument;
-      Autodesk.Revit.ApplicationServices.Application app = uiapp.Application;
-      Document doc = uidoc.Document;
+      Document doc = view3d.Document;
 
-      if( doc.ActiveView as View3D != null )
-        ExportView3D( doc, doc.ActiveView as View3D );
-      else
-        TaskDialog.Show( "va3c", "You must be in 3D view to export." );
+      Va3cExportContext context
+        = new Va3cExportContext( doc );
 
-      return Result.Succeeded;
-    }
+      CustomExporter exporter = new CustomExporter(
+        doc, context );
 
-    internal void ExportView3D( Document document, View3D view3D )
-    {
-      Va3cExportContext context = new Va3cExportContext( document );
+      // Note: Excluding faces just suppresses the 
+      // OnFaceBegin calls, not the actual processing 
+      // of face tessellation. Meshes of the faces 
+      // will still be received by the context.
 
-      // Create an instance of a custom exporter by giving it a document and the context.
-      CustomExporter exporter = new CustomExporter( document, context );
-
-      //    Note: Excluding faces just excludes the calls, not the actual processing of
-      //    face tessellation. Meshes of the faces will still be received by the context.
       exporter.IncludeFaces = false;
 
       exporter.ShouldStopOnError = false;
 
-      exporter.Export( view3D );
+      exporter.Export( view3d );
+    }
+
+    public Result Execute( 
+      ExternalCommandData commandData, 
+      ref string message, 
+      ElementSet elements )
+    {
+      UIApplication uiapp = commandData.Application;
+      UIDocument uidoc = uiapp.ActiveUIDocument;
+      Application app = uiapp.Application;
+      Document doc = uidoc.Document;
+
+      if( doc.ActiveView is View3D )
+      {
+        ExportView3D( doc.ActiveView as View3D );
+      }
+      else
+      {
+        TaskDialog.Show( "va3c", 
+          "You must be in 3D view to export." );
+      }
+      return Result.Succeeded;
     }
   }
 }

@@ -10,7 +10,7 @@ namespace RvtVa3c
   internal class Va3cMaterial
   {
     #region Declarations
-    internal Int32 Id { get; set; }
+    internal ElementId Id { get; set; }
     internal String Name { get; set; }
     internal Dictionary<string, AssetProperty> Properties { get; set; }
     #endregion
@@ -18,7 +18,7 @@ namespace RvtVa3c
     #region Constructors
     internal Va3cMaterial( Material m )
     {
-      Id = m.Id.IntegerValue;
+      Id = m.Id;
       Name = m.Name;
       Properties = new Dictionary<string, AssetProperty>();
 

@@ -14,14 +14,28 @@ namespace RvtVa3c
 {
   class Va3cExportContext : IExportContext
   {
-    private Document _doc;
-    private XNamespace _ns;
-    private XElement _collada;
-    private XElement _libraryMaterials;
-    private XElement _libraryGeometry;
-    //private XElement _libraryImages;
-    private XElement _libraryEffects;
-    private XElement _libraryVisualScenes;
+    Document _doc;
+    Va3cScene _scene;
+
+    bool isCancelled = false;
+
+    Stack<ElementId> elementStack = new Stack<ElementId>();
+
+    Stack<Transform> transformationStack = new Stack<Transform>();
+
+    ElementId currentMaterialId = ElementId.InvalidElementId;
+
+    Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
+    
+    List<Va3cFace> _faces = new List<Va3cFace>();
+
+    XNamespace _ns;
+    XElement _collada;
+    XElement _libraryMaterials;
+    XElement _libraryGeometry;
+    //XElement _libraryImages;
+    XElement _libraryEffects;
+    XElement _libraryVisualScenes;
 
     public uint CurrentPolymeshIndex { get; set; }
 
@@ -51,22 +65,10 @@ namespace RvtVa3c
       }
     }
 
-    private bool isCancelled = false;
-
-    Stack<ElementId> elementStack = new Stack<ElementId>();
-
-    private Stack<Transform> transformationStack = new Stack<Transform>();
-
-    ElementId currentMaterialId = ElementId.InvalidElementId;
-
-    //StreamWriter streamWriter = null;
-
-    Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
-    List<Va3cFace> _faces = new List<Va3cFace>();
-
     public Va3cExportContext( Document document )
     {
       _doc = document;
+      _scene = new Va3cScene();
       transformationStack.Push( Transform.Identity );
     }
 
@@ -100,7 +102,7 @@ namespace RvtVa3c
       _collada.Save( @"C:\temp\testnew.dae" );
     }
 
-    private void WriteXmlColladaBegin()
+    void WriteXmlColladaBegin()
     {
       _ns = "http://www.collada.org/2005/11/COLLADASchema";
       _collada = new XElement( _ns + "COLLADA",
@@ -110,12 +112,12 @@ namespace RvtVa3c
       //streamWriter.Write( "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n" );
     }
 
-    private void WriteXmlColladaEnd()
+    void WriteXmlColladaEnd()
     {
       //streamWriter.Write( "</COLLADA>\n" );
     }
 
-    private void WriteXmlAsset()
+    void WriteXmlAsset()
     {
       _collada.Add(
           new XElement( _ns + "asset",
@@ -144,7 +146,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</asset>\n" );
     }
 
-    private void WriteXmlLibraryGeometriesBegin()
+    void WriteXmlLibraryGeometriesBegin()
     {
       _libraryGeometry = new XElement( _ns + "library_geometries" );
       _collada.Add( _libraryGeometry );
@@ -176,11 +178,11 @@ namespace RvtVa3c
         WriteXmlGeometryTrianglesWithoutMap( mesh, polymesh );
 
 
-      _faces.Add( new Va3cFace( CurrentElement, CurrentPolymeshIndex, currentMaterialId ) );
+      //_faces.Add( new Va3cFace( CurrentElement, currentMaterialId ) );
       polymeshToMaterialId.Add( CurrentPolymeshIndex, currentMaterialId );
     }
 
-    private XElement WriteXmlGeometryBegin()
+    XElement WriteXmlGeometryBegin()
     {
       XElement geom = new XElement( _ns + "geometry",
                           new XAttribute( "id", "geom-" + CurrentPolymeshIndex ),
@@ -191,7 +193,7 @@ namespace RvtVa3c
       //streamWriter.Write( "<mesh>\n" );
     }
 
-    private string GetElementName( Element element, string defaultPrefix )
+    string GetElementName( Element element, string defaultPrefix )
     {
       //make it an NCName
 
@@ -224,7 +226,7 @@ namespace RvtVa3c
 
 
 
-    private void WriteXmlGeometrySourcePositions( XElement mesh, PolymeshTopology polymesh )
+    void WriteXmlGeometrySourcePositions( XElement mesh, PolymeshTopology polymesh )
     {
 
       XElement floatArray = new XElement( _ns + "float_array",
@@ -282,7 +284,7 @@ namespace RvtVa3c
 
     }
 
-    private void WriteXmlGeometrySourceNormals( XElement mesh, PolymeshTopology polymesh )
+    void WriteXmlGeometrySourceNormals( XElement mesh, PolymeshTopology polymesh )
     {
       int nNormals = 0;
 
@@ -349,7 +351,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</source>\n" );
     }
 
-    private void WriteXmlGeometrySourceMap( XElement mesh, PolymeshTopology polymesh )
+    void WriteXmlGeometrySourceMap( XElement mesh, PolymeshTopology polymesh )
     {
       XElement source = new XElement( _ns + "source",
                           new XAttribute( "id", "geom-" + CurrentPolymeshIndex + "-map" ) );
@@ -395,7 +397,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</source>\n" );
     }
 
-    private void WriteXmlGeometryVertices( XElement mesh )
+    void WriteXmlGeometryVertices( XElement mesh )
     {
       mesh.Add( new XElement( _ns + "vertices",
                   new XAttribute( "id", "geom-" + CurrentPolymeshIndex + "-vertices" ),
@@ -408,7 +410,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</vertices>\n" );
     }
 
-    private void WriteXmlGeometryTrianglesWithoutMap( XElement mesh, PolymeshTopology polymesh )
+    void WriteXmlGeometryTrianglesWithoutMap( XElement mesh, PolymeshTopology polymesh )
     {
       XElement triangles = new XElement( _ns + "triangles",
                               new XAttribute( "count", polymesh.NumberOfFacets ) );
@@ -467,7 +469,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</triangles>\n" );
     }
 
-    private void WriteXmlGeometryTrianglesWithMap( XElement mesh, PolymeshTopology polymesh )
+    void WriteXmlGeometryTrianglesWithMap( XElement mesh, PolymeshTopology polymesh )
     {
       XElement triangles = new XElement( _ns + "triangles",
                              new XAttribute( "count", polymesh.NumberOfFacets ) );
@@ -541,7 +543,7 @@ namespace RvtVa3c
       currentMaterialId = node.MaterialId;
     }
 
-    private void WriteXmlLibraryMaterials()
+    void WriteXmlLibraryMaterials()
     {
       _libraryMaterials = new XElement( _ns + "library_materials" );
       _collada.Add( _libraryMaterials );
@@ -567,7 +569,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</library_materials>\n" );
     }
 
-    private string GetMaterialName( ElementId materialId )
+    string GetMaterialName( ElementId materialId )
     {
       Material material = _doc.GetElement( materialId ) as Material;
       if( material != null )
@@ -578,7 +580,7 @@ namespace RvtVa3c
       return ""; //default material name
     }
 
-    private bool IsMaterialValid( ElementId materialId )
+    bool IsMaterialValid( ElementId materialId )
     {
       if( materialId.IntegerValue < 0 ) return false;
       Material material = _doc.GetElement( materialId ) as Material;
@@ -588,7 +590,7 @@ namespace RvtVa3c
       return false;
     }
 
-    private void WriteXmlLibraryEffects()
+    void WriteXmlLibraryEffects()
     {
       _libraryEffects = new XElement( _ns + "library_effects" );
       _collada.Add( _libraryEffects );
@@ -685,7 +687,7 @@ namespace RvtVa3c
       //streamWriter.Write( "</library_effects>\n" );
     }
 
-    private XElement extractMaterialTexture( Material mat, XElement profileNode )
+    XElement extractMaterialTexture( Material mat, XElement profileNode )
     {
       // we need to figure out if we can get at the texture... if we can, then pull it out to the target folder.
       AppearanceAssetElement assetElement = _doc.GetElement( mat.AppearanceAssetId ) as AppearanceAssetElement;
@@ -715,89 +717,89 @@ namespace RvtVa3c
       //streamWriter.Write( "<visual_scene id=\"Revit_project\">\n" );
       Dictionary<int, XElement> categoryNodes = new Dictionary<int, XElement>();
 
-      _faces = _faces.OrderBy( f => f.ElementId ).ToList();
+      //_faces = _faces.OrderBy( f => f.ElementId ).ToList();
 
-      int lastId = -1;
-      XElement elemNode = null;
-      XElement categoryNode = null;
-      string name = "elementName";
-      foreach( var face in _faces )
-      {
-        if( categoryNodes.ContainsKey( face.CategoryId ) )
-        {
-          categoryNode = categoryNodes[face.CategoryId];
-        }
-        else
-        {
-          Category c = _doc.Settings.Categories.get_Item( (BuiltInCategory) face.CategoryId );
-          if( c != null )
-          {
-            categoryNode = new XElement( _ns + "node",
-                                          new XAttribute( "id", "category-" + face.CategoryId ),
-                                          new XAttribute( "name", c.Name.Replace( " ", "" ) ) );
-          }
-          else
-          {
-            categoryNode = new XElement( _ns + "node",
-                                          new XAttribute( "id", "category-" + face.CategoryId ),
-                                          new XAttribute( "name", "other" ) );
-          }
-          scene.Add( categoryNode );
-          categoryNodes.Add( face.CategoryId, categoryNode );
-        }
+      //int lastId = -1;
+      //XElement elemNode = null;
+      //XElement categoryNode = null;
+      //string name = "elementName";
+      //foreach( var face in _faces )
+      //{
+      //  if( categoryNodes.ContainsKey( face.CategoryId ) )
+      //  {
+      //    categoryNode = categoryNodes[face.CategoryId];
+      //  }
+      //  else
+      //  {
+      //    Category c = _doc.Settings.Categories.get_Item( (BuiltInCategory) face.CategoryId );
+      //    if( c != null )
+      //    {
+      //      categoryNode = new XElement( _ns + "node",
+      //                                    new XAttribute( "id", "category-" + face.CategoryId ),
+      //                                    new XAttribute( "name", c.Name.Replace( " ", "" ) ) );
+      //    }
+      //    else
+      //    {
+      //      categoryNode = new XElement( _ns + "node",
+      //                                    new XAttribute( "id", "category-" + face.CategoryId ),
+      //                                    new XAttribute( "name", "other" ) );
+      //    }
+      //    scene.Add( categoryNode );
+      //    categoryNodes.Add( face.CategoryId, categoryNode );
+      //  }
 
-        if( face.ElementId != lastId )
-        {
-          Element e = face.Element;
-          if( e != null ) name = GetElementName( e, "Elem" );
-          elemNode = new XElement( _ns + "node",
-                                new XAttribute( "id", "elem-" + face.ElementId ),
-                                new XAttribute( "name", name ) );
-          if( categoryNode != null ) categoryNode.Add( elemNode );
-          lastId = face.ElementId;
-        }
+      //  if( face.ElementId != lastId )
+      //  {
+      //    Element e = face.Element;
+      //    if( e != null ) name = GetElementName( e, "Elem" );
+      //    elemNode = new XElement( _ns + "node",
+      //                          new XAttribute( "id", "elem-" + face.ElementId ),
+      //                          new XAttribute( "name", name ) );
+      //    if( categoryNode != null ) categoryNode.Add( elemNode );
+      //    lastId = face.ElementId;
+      //  }
 
 
-        XElement node = new XElement( _ns + "node",
-                          new XAttribute( "id", "node-" + face.FaceId ),
-                          new XAttribute( "name", name ) );
-        if( elemNode != null ) elemNode.Add( node );
-        XElement inst = new XElement( _ns + "instance_geometry",
-                              new XAttribute( "url", "#geom-" + face.FaceId ) );
-        node.Add( inst );
-        if( IsMaterialValid( face.MaterialId ) )
-        {
-          inst.Add( new XElement( _ns + "bind_material",
-                        new XElement( _ns + "technique_common",
-                            new XElement( _ns + "instance_material",
-                                new XAttribute( "target", "#material-" + face.MaterialId.IntegerValue ),
-                                new XAttribute( "symbol", "material-" + face.MaterialId.IntegerValue ) ) ) ) );
-        }
+      //  XElement node = new XElement( _ns + "node",
+      //                    new XAttribute( "id", "node-" + face.FaceId ),
+      //                    new XAttribute( "name", name ) );
+      //  if( elemNode != null ) elemNode.Add( node );
+      //  XElement inst = new XElement( _ns + "instance_geometry",
+      //                        new XAttribute( "url", "#geom-" + face.FaceId ) );
+      //  node.Add( inst );
+      //  if( IsMaterialValid( face.MaterialId ) )
+      //  {
+      //    inst.Add( new XElement( _ns + "bind_material",
+      //                  new XElement( _ns + "technique_common",
+      //                      new XElement( _ns + "instance_material",
+      //                          new XAttribute( "target", "#material-" + face.MaterialId.IntegerValue ),
+      //                          new XAttribute( "symbol", "material-" + face.MaterialId.IntegerValue ) ) ) ) );
+      //  }
 
-        //streamWriter.Write( "<node id=\"node-" + pair.Key + "\" name=\"" + name + "\">\n" );
-        //streamWriter.Write( "<instance_geometry url=\"#geom-" + pair.Key + "\">\n" );
-        //if( IsMaterialValid( pair.Value ) )
-        //{
-        //  streamWriter.Write( "<bind_material>\n" );
-        //  streamWriter.Write( "<technique_common>\n" );
-        //  streamWriter.Write( "<instance_material target=\"#material-" + pair.Value + "\" symbol=\"material-" + pair.Value + "\" >\n" );
-        //  streamWriter.Write( "</instance_material>\n" );
-        //  streamWriter.Write( "</technique_common>\n" );
-        //  streamWriter.Write( "</bind_material>\n" );
-        //}
-        //streamWriter.Write( "</instance_geometry>\n" );
-        //streamWriter.Write( "</node>\n" );
-      }
+      //  //streamWriter.Write( "<node id=\"node-" + pair.Key + "\" name=\"" + name + "\">\n" );
+      //  //streamWriter.Write( "<instance_geometry url=\"#geom-" + pair.Key + "\">\n" );
+      //  //if( IsMaterialValid( pair.Value ) )
+      //  //{
+      //  //  streamWriter.Write( "<bind_material>\n" );
+      //  //  streamWriter.Write( "<technique_common>\n" );
+      //  //  streamWriter.Write( "<instance_material target=\"#material-" + pair.Value + "\" symbol=\"material-" + pair.Value + "\" >\n" );
+      //  //  streamWriter.Write( "</instance_material>\n" );
+      //  //  streamWriter.Write( "</technique_common>\n" );
+      //  //  streamWriter.Write( "</bind_material>\n" );
+      //  //}
+      //  //streamWriter.Write( "</instance_geometry>\n" );
+      //  //streamWriter.Write( "</node>\n" );
+      //}
 
-      //streamWriter.Write( "</visual_scene>\n" );
-      //streamWriter.Write( "</library_visual_scenes>\n" );
+      ////streamWriter.Write( "</visual_scene>\n" );
+      ////streamWriter.Write( "</library_visual_scenes>\n" );
 
-      _collada.Add( new XElement( _ns + "scene",
-                      new XElement( _ns + "instance_visual_scene",
-                          new XAttribute( "url", "#" + sceneName ) ) ) );
-      //streamWriter.Write( "<scene>\n" );
-      //streamWriter.Write( "<instance_visual_scene url=\"#Revit_project\"/>\n" );
-      //streamWriter.Write( "</scene>\n" );
+      //_collada.Add( new XElement( _ns + "scene",
+      //                new XElement( _ns + "instance_visual_scene",
+      //                    new XAttribute( "url", "#" + sceneName ) ) ) );
+      ////streamWriter.Write( "<scene>\n" );
+      ////streamWriter.Write( "<instance_visual_scene url=\"#Revit_project\"/>\n" );
+      ////streamWriter.Write( "</scene>\n" );
     }
 
     public bool IsCanceled()
@@ -832,7 +834,8 @@ namespace RvtVa3c
       // Note: This method is invoked even for a view that was skipped.
     }
 
-    public RenderNodeAction OnElementBegin( ElementId elementId )
+    public RenderNodeAction OnElementBegin( 
+      ElementId elementId )
     {
       Element e = _doc.GetElement( elementId );
       Debug.WriteLine( "OnElementBegin: " + elementId.IntegerValue + ": " + e.Category.Name + ": " + e.Name );
@@ -841,7 +844,8 @@ namespace RvtVa3c
       return RenderNodeAction.Proceed;
     }
 
-    public void OnElementEnd( ElementId elementId )
+    public void OnElementEnd( 
+      ElementId elementId )
     {
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
       // Note: this method is invoked even for elements that were skipped.
@@ -850,15 +854,17 @@ namespace RvtVa3c
 
     public RenderNodeAction OnFaceBegin( FaceNode node )
     {
-      Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
       // This method is invoked only if the custom exporter was set to include faces.
+      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
       return RenderNodeAction.Proceed;
     }
 
     public void OnFaceEnd( FaceNode node )
     {
-      Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
       // This method is invoked only if the custom exporter was set to include faces.
+      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
       // Note: This method is invoked even for faces that were skipped.
     }
 
