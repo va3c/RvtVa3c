@@ -16,6 +16,8 @@ namespace RvtVa3c
 {
   class Va3cExportContext : IExportContext
   {
+    string _output_folder_path = "C:/a/vs/RvtVa3c/models/";
+
     #region VertexLookupXyz
     /// <summary>
     /// A vertex lookup class to eliminate 
@@ -351,8 +353,10 @@ namespace RvtVa3c
 
       // Serialise scene
 
-			using( FileStream stream 
-        = File.OpenWrite( "C:/tmp/test.js" ) )
+      string filename = _output_folder_path + _doc.Title + ".js";
+
+			using( FileStream stream
+        = File.OpenWrite( filename ) )
       {
         DataContractJsonSerializer serialiser
           = new DataContractJsonSerializer(
