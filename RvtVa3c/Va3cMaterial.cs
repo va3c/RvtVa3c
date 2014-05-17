@@ -5,7 +5,6 @@ using System.Text;
 using Autodesk.Revit.Utility;
 using Autodesk.Revit.DB;
 
-
 namespace RvtVa3c
 {
   internal class Va3cMaterial
