@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>Command RvtVa3c</Text>
+    <Description>Some description for RvtVa3c</Description>
+    <Assembly>RvtVa3c.dll</Assembly>
+    <FullClassName>RvtVa3c.Command</FullClassName>
+    <ClientId>30d6d621-6e43-4e47-bc78-b4f3742f7212</ClientId>
+    <VendorId>TBC_</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application RvtVa3c</Name>
+    <Assembly>RvtVa3c.dll</Assembly>
+    <FullClassName>RvtVa3c.App</FullClassName>
+    <ClientId>29b6fa8c-524f-464c-bb11-8bf11ed63868</ClientId>
+    <VendorId>TBC_</VendorId>
+    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>
