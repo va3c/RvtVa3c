@@ -22,7 +22,7 @@ namespace RvtVa3c
         .Location;
 
       RibbonItemData i1 = new PushButtonData(
-          "RvtVa3c_Command", "Va3c Scene Exporter",
+          "RvtVa3c_Command", "Va3c \r\n Export",
           path, "RvtVa3c.Command" );
 
       i1.ToolTip = "Export three.js JSON scene "
@@ -37,7 +37,7 @@ namespace RvtVa3c
     {
       PopulatePanel(
         a.CreateRibbonPanel(
-          "Va3c Scene Export" ) );
+          "Va3c Export" ) );
 
       return Result.Succeeded;
     }

@@ -29,8 +29,6 @@ namespace RvtVa3c
 
   class Va3cExportContext : IExportContext
   {
-    string _output_folder_path = "C:/a/vs/va3c/RvtVa3c/models/";
-
     /// <summary>
     /// Scale the model down from millimetres to metres.
     /// Nope, acually we stick with millimetres after all.
@@ -219,6 +217,7 @@ namespace RvtVa3c
     #endregion // VertexLookupInt
 
     Document _doc;
+    string _filename;
     Va3cScene _scene;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
     Dictionary<string, Va3cScene.Va3cObject> _objects;
@@ -360,9 +359,10 @@ namespace RvtVa3c
       }
     }
 
-    public Va3cExportContext( Document document )
+    public Va3cExportContext( Document document, string filename )
     {
       _doc = document;
+      _filename = filename;
     }
 
     public bool Start()
@@ -399,7 +399,6 @@ namespace RvtVa3c
     {
       // Finish populating scene
 
-      //_scene.metadata.materials = _materials.Count;
       _scene.materials = _materials.Values.ToList();
 
       _scene.geometries = _geometries.Values.ToList();
@@ -408,26 +407,23 @@ namespace RvtVa3c
 
       // Serialise scene
 
-      string filename = _output_folder_path + _doc.Title + ".js";
-
       //using( FileStream stream
       //  = File.OpenWrite( filename ) )
       //{
       //  DataContractJsonSerializer serialiser
       //    = new DataContractJsonSerializer(
       //      typeof( Va3cScene ) );
-
       //  serialiser.WriteObject( stream, _scene );
       //}
 
-      JsonSerializerSettings settings 
+      JsonSerializerSettings settings
         = new JsonSerializerSettings();
 
-      settings.NullValueHandling 
+      settings.NullValueHandling
         = NullValueHandling.Ignore;
 
-      File.WriteAllText( filename, 
-        JsonConvert.SerializeObject( _scene, 
+      File.WriteAllText( _filename,
+        JsonConvert.SerializeObject( _scene,
           Formatting.Indented, settings ) );
 
 #if USE_DYNAMIC_JSON
@@ -509,8 +505,6 @@ namespace RvtVa3c
 
       return JsonConvert.SerializeObject( jason );
 #endif // USE_DYNAMIC_JSON
-
-      //_scene.metadata.
     }
 
     public void OnPolymesh( PolymeshTopology polymesh )
