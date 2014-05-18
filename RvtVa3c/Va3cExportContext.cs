@@ -681,7 +681,7 @@ namespace RvtVa3c
       //_currentElement.geometry = uid;
       _currentElement.material = _currentMaterialUid;
       _currentElement.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-      _currentElement.type = "Mesh";
+      _currentElement.type = "RevitElement";
       _currentElement.uuid = uid;
 
       _currentObject = new Dictionary<string,Va3cScene.Va3cObject>();

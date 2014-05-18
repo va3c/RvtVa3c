@@ -871,7 +871,7 @@
     "children": [
       {
         "uuid": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a",
-        "type": "Mesh",
+        "type": "RevitElement",
         "matrix": [
           1.0,
           0.0,
@@ -971,7 +971,7 @@
       },
       {
         "uuid": "8dbc9fa1-e2be-4fe1-b83d-f4f2f90908e2-0004ee8f",
-        "type": "Mesh",
+        "type": "RevitElement",
         "matrix": [
           1.0,
           0.0,
