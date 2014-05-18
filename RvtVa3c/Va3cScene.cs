@@ -79,18 +79,24 @@ namespace RvtVa3c
     //"transparent": false
 
     [DataContract]
-    public class Va3cGeometry
+    public class Va3cGeometryData
     {
-      [DataMember] public string uuid { get; set; }
-      [DataMember] public string type { get; set; } // "Geometry"
-      //[DataMember] public double scale { get; set; }
-      [DataMember] public List<Va3cMaterial> materials { get; set; }
       [DataMember] public List<int> vertices { get; set; } // millimetres
       // "morphTargets": []
       [DataMember] public List<double> normals { get; set; }
       // "colors": []
       // "uvs": [[]]
       [DataMember] public List<int> faces { get; set; } // indices into Vertices + Materials
+    }
+
+    [DataContract]
+    public class Va3cGeometry
+    {
+      [DataMember] public string uuid { get; set; }
+      [DataMember] public string type { get; set; } // "Geometry"
+      [DataMember] public Va3cGeometryData data { get; set; }
+      //[DataMember] public double scale { get; set; }
+      [DataMember] public List<Va3cMaterial> materials { get; set; }
     }
 
     [DataContract]

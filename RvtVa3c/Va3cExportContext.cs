@@ -185,32 +185,32 @@ namespace RvtVa3c
     }
     #endregion // VertexLookupInt
 
-    #region FaceMaterial
-    /// <summary>
-    /// A helper class containing three vertex lookup
-    /// indices defining a facet, e.g. mesh triangle,
-    /// plus the index into the material list to apply.
-    /// </summary>
-    class FaceMaterial
-    {
-      int V1 { get; set; }
-      int V2 { get; set; }
-      int V3 { get; set; }
-      string MaterialUid { get; set; }
-      // we might want to keep track of this as well:
-      //ElementId ElementId { get; set; }
-      //int CategoryId { get; set; }
-      //ElementId MaterialId { get; set; }
+    //#region FaceMaterial
+    ///// <summary>
+    ///// A helper class containing three vertex lookup
+    ///// indices defining a facet, e.g. mesh triangle,
+    ///// plus the index into the material list to apply.
+    ///// </summary>
+    //class FaceMaterial
+    //{
+    //  int V1 { get; set; }
+    //  int V2 { get; set; }
+    //  int V3 { get; set; }
+    //  string MaterialUid { get; set; }
+    //  // we might want to keep track of this as well:
+    //  //ElementId ElementId { get; set; }
+    //  //int CategoryId { get; set; }
+    //  //ElementId MaterialId { get; set; }
 
-      public FaceMaterial( int v1, int v2, int v3, string material_uid )
-      {
-        V1 = v1;
-        V2 = v2;
-        V3 = v3;
-        MaterialUid = material_uid;
-      }
-    }
-    #endregion // FaceMaterial
+    //  public FaceMaterial( int v1, int v2, int v3, string material_uid )
+    //  {
+    //    V1 = v1;
+    //    V2 = v2;
+    //    V3 = v3;
+    //    MaterialUid = material_uid;
+    //  }
+    //}
+    //#endregion // FaceMaterial
 
     Document _doc;
     Va3cScene _scene;
@@ -218,7 +218,7 @@ namespace RvtVa3c
 
     //VertexLookupXyz _vertices;
     VertexLookupInt _vertices;
-    List<FaceMaterial> _faces;
+    //List<FaceMaterial> _faces;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
 
     Dictionary<string, Va3cScene.Va3cObject> _objects;
@@ -233,16 +233,6 @@ namespace RvtVa3c
     string _currentMaterialUid;
 
     Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
-
-    //List<Va3cFace> _faces = new List<Va3cFace>();
-
-    XNamespace _ns;
-    XElement _collada;
-    XElement _libraryMaterials;
-    XElement _libraryGeometry;
-    //XElement _libraryImages;
-    XElement _libraryEffects;
-    XElement _libraryVisualScenes;
 
     public uint CurrentPolymeshIndex { get; set; }
 
@@ -313,7 +303,7 @@ namespace RvtVa3c
 
     public bool Start()
     {
-      _faces = new List<FaceMaterial>();
+      //_faces = new List<FaceMaterial>();
       _materials = new Dictionary<string, Va3cScene.Va3cMaterial>();
       _vertices = new VertexLookupInt();
       _geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
@@ -478,10 +468,10 @@ namespace RvtVa3c
         v3 = _vertices.AddVertex( new PointInt(
           pts[facet.V2] ) );
 
-        _currentGeometry.faces.Add( 0 );
-        _currentGeometry.faces.Add( v1 );
-        _currentGeometry.faces.Add( v2 );
-        _currentGeometry.faces.Add( v3 );
+        _currentGeometry.data.faces.Add( 0 );
+        _currentGeometry.data.faces.Add( v1 );
+        _currentGeometry.data.faces.Add( v2 );
+        _currentGeometry.data.faces.Add( v3 );
       }
     }
 
@@ -563,9 +553,10 @@ namespace RvtVa3c
 
       _currentGeometry.uuid = e.UniqueId;
       _currentGeometry.type = "Geometry";
-      _currentGeometry.faces = new List<int>();
-      _currentGeometry.vertices = new List<int>();
-      _currentGeometry.normals = new List<double>();
+      _currentGeometry.data = new Va3cScene.Va3cGeometryData();
+      _currentGeometry.data.faces = new List<int>();
+      _currentGeometry.data.vertices = new List<int>();
+      _currentGeometry.data.normals = new List<double>();
 
       _vertices.Clear();
 
