@@ -21,6 +21,8 @@ namespace RvtVa3c
   // Implement element properties
   // Eliminate multiple materials 
   // Prompt user for output file name and location
+  // Eliminate null element properties, i.e. useless 
+  //     JSON userData entries
   // Todo:
   // Check for file size
   // Instance/type reuse
@@ -35,7 +37,11 @@ namespace RvtVa3c
 
     /// <summary>
     /// If true, switch Y and Z coordinate 
-    /// and flip X to negative.
+    /// and flip X to negative to convert from
+    /// Revit coordinate system to standard 3d
+    /// computer graphics coordinate system with
+    /// Z pointing out of screen, X towards right,
+    /// Y up.
     /// </summary>
     bool _switch_coordinates = true;
 
@@ -255,28 +261,6 @@ namespace RvtVa3c
       get
       {
         return _vertices[_currentMaterialUid];
-      }
-    }
-
-    //Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
-
-    //public uint CurrentPolymeshIndex { get; set; }
-
-    ElementId CurrentElementId
-    {
-      get
-      {
-        return ( _elementStack.Count > 0 )
-          ? _elementStack.Peek()
-          : ElementId.InvalidElementId;
-      }
-    }
-
-    Element CurrentElement
-    {
-      get
-      {
-        return _doc.GetElement( CurrentElementId );
       }
     }
 
