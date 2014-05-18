@@ -25,6 +25,7 @@ namespace RvtVa3c
   // Todo:
   // Check for file size
   // Instance/type reuse
+  // Prompt user for output file name and location
 
   class Va3cExportContext : IExportContext
   {
