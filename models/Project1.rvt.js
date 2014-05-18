@@ -4738,7 +4738,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090b",
         "name": "Wall Walls <2315 Wall 1>",
         "userData": {
           "Structural": "No",
@@ -4839,7 +4838,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090c",
         "name": "Wall Walls <2316 Wall 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028",
         "userData": {
@@ -4941,7 +4939,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090d",
         "name": "Wall Walls <2317 Wall 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028",
         "userData": {
@@ -5043,7 +5040,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090e",
         "name": "Wall Walls <2318 Wall 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028",
         "userData": {
@@ -5145,7 +5141,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000932",
         "name": "Wall Walls <2354 Wall 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028",
         "userData": {
@@ -5247,7 +5242,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000029"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000097e",
         "name": "FootPrintRoof Roofs <2430 Roof 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000028",
         "userData": {
@@ -5339,7 +5333,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000029"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-000009c9",
         "name": "FootPrintRoof Roofs <2505 Roof 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000029",
         "userData": {
@@ -5481,7 +5474,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000d0d",
         "name": "FamilyInstance Doors Double-Glass 1 <3341 72\" x 84\">",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000029",
         "userData": {
@@ -5608,7 +5600,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000f95",
         "name": "FamilyInstance Doors Single-Panel 1 <3989 36\" x 84\">",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71",
         "userData": {
@@ -5712,7 +5703,6 @@
             "material": "b9eed9d5-8c91-4b62-8103-154d610c3150-00000fad"
           }
         ],
-        "geometry": "b9eed9d5-8c91-4b62-8103-154d610c3150-000011c7",
         "name": "FamilyInstance Furniture M_Table-Rectangular <4551 1830 x 0762mm>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71",
         "userData": {
@@ -5842,7 +5832,6 @@
             "material": "8eeef555-8ea6-4804-9b01-e34ec65c8723-00001236"
           }
         ],
-        "geometry": "8eeef555-8ea6-4804-9b01-e34ec65c8723-000014ef",
         "name": "FamilyInstance Windows M_Fixed with Trim <5359 3000 x 2000 mm 2>",
         "material": "b9eed9d5-8c91-4b62-8103-154d610c3150-00000fad",
         "userData": {

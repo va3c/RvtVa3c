@@ -917,7 +917,6 @@
             "material": "cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0"
           }
         ],
-        "geometry": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a",
         "name": "Wall Walls <322698 Generic - 200mm>",
         "userData": {
           "Structural": "No",
@@ -1043,7 +1042,6 @@
             "material": "e908fcef-841d-4224-aded-6d9fdee957ca-000082f5"
           }
         ],
-        "geometry": "8dbc9fa1-e2be-4fe1-b83d-f4f2f90908e2-0004ee8f",
         "name": "FamilyInstance Windows M_Fixed <323215 0915 x 1830mm>",
         "material": "cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0",
         "userData": {

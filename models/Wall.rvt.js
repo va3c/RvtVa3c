@@ -179,7 +179,6 @@
             "material": "cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0"
           }
         ],
-        "geometry": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a",
         "name": "Wall Walls <322698 Generic - 200mm>",
         "userData": {
           "Structural": "No",

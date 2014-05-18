@@ -21,8 +21,8 @@ namespace RvtVa3c
   // Add scaling for Theo [(0,0),(20000,20000)]
   // Implement the external application button
   // Implement element properties
-  // Todo:
   // Eliminate multiple materials 
+  // Todo:
   // Check for file size
   // Instance/type reuse
 
@@ -572,11 +572,11 @@ namespace RvtVa3c
       }
       else
       {
-        // Todo: generate a GUID based on colour, 
+        //string uid = Guid.NewGuid().ToString();
+
+        // Generate a GUID based on colour, 
         // transparency, etc. to avoid duplicating
         // non-element material definitions.
-
-        //string uid = Guid.NewGuid().ToString();
 
         int iColor = Util.ColorToInt( node.Color );
 
@@ -678,7 +678,7 @@ namespace RvtVa3c
       _currentElement = new Va3cScene.Va3cObject();
 
       _currentElement.name = Util.ElementDescription( e );
-      _currentElement.geometry = uid;
+      //_currentElement.geometry = uid;
       _currentElement.material = _currentMaterialUid;
       _currentElement.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
       _currentElement.type = "Mesh";

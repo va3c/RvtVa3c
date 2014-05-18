@@ -15132,7 +15132,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090b",
         "name": "Wall Walls <2315 Wall 1>",
         "userData": {
           "Structural": "No",
@@ -15258,7 +15257,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090c",
         "name": "Wall Walls <2316 Wall 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a",
         "userData": {
@@ -15385,7 +15383,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090d",
         "name": "Wall Walls <2317 Wall 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a",
         "userData": {
@@ -15512,7 +15509,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000090e",
         "name": "Wall Walls <2318 Wall 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a",
         "userData": {
@@ -15639,7 +15635,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000932",
         "name": "Wall Walls <2354 Wall 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a",
         "userData": {
@@ -15766,7 +15761,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-000012f0"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-0000097e",
         "name": "FootPrintRoof Roofs <2430 Roof 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-0000130a",
         "userData": {
@@ -15883,7 +15877,6 @@
             "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-000012f0"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-000009c9",
         "name": "FootPrintRoof Roofs <2505 Roof 1>",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-000012f0",
         "userData": {
@@ -16025,7 +16018,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000d0d",
         "name": "FamilyInstance Doors Double-Glass 1 <3341 72\" x 84\">",
         "material": "7a4d21ae-fed8-4511-a475-79655f86ca47-000012f0",
         "userData": {
@@ -16152,7 +16144,6 @@
             "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71"
           }
         ],
-        "geometry": "6c13105d-5baf-4736-8456-7bdd5628c913-00000f95",
         "name": "FamilyInstance Doors Single-Panel 1 <3989 36\" x 84\">",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71",
         "userData": {
@@ -16256,7 +16247,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-00000fae",
         "name": "Railing Railings <4014 Railing 1>",
         "material": "6c13105d-5baf-4736-8456-7bdd5628c913-00000a71",
         "userData": {
@@ -16343,7 +16333,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-00001213",
         "name": "Floor Floors <4627 Floor 1>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16435,7 +16424,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-00001229",
         "name": "Stairs Stairs <4649 Stair>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16533,7 +16521,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-0000124c",
         "name": "StairsRun Runs <4684 3\" Tread 1/2\" Riser>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16628,7 +16615,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-0000124e",
         "name": "Element Supports <4686 Stringer - 2\" Width>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16708,7 +16694,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-0000124f",
         "name": "Element Supports <4687 Stringer - 2\" Width>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16788,7 +16773,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-0000125e",
         "name": "Railing Railings <4702 Railing 1>",
         "material": "MaterialNode_8355711_0",
         "userData": {
@@ -16875,7 +16859,6 @@
             "material": "MaterialNode_8355711_0"
           }
         ],
-        "geometry": "39630b26-46fa-4a39-b4f1-35bc469dbe96-00001262",
         "name": "Railing Railings <4706 Railing 1>",
         "material": "MaterialNode_8355711_0",
         "userData": {
