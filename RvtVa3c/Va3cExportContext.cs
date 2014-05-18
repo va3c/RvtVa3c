@@ -497,7 +497,7 @@ namespace RvtVa3c
 
       pts = pts.Select( p => t.OfPoint( p ) ).ToList();
 
-      int i = 0, v1, v2, v3;
+      int v1, v2, v3;
 
       foreach( PolymeshFacet facet
         in polymesh.GetFacets() )
