@@ -17,6 +17,7 @@ namespace RvtVa3c
   {
     void ExportView3D( View3D view3d )
     {
+      AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
       Document doc = view3d.Document;
 
       Va3cExportContext context
@@ -35,6 +36,22 @@ namespace RvtVa3c
       exporter.ShouldStopOnError = false;
 
       exporter.Export( view3d );
+    }
+
+    System.Reflection.Assembly CurrentDomain_AssemblyResolve( object sender, ResolveEventArgs args )
+    {
+      if( args.Name.Contains( "Newtonsoft" ) )
+      {
+        string filename = System.IO.Path.Combine( System.IO.Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location ),
+                                                  "Newtonsoft.Json.dll" );
+
+        if( System.IO.File.Exists( filename ) )
+        {
+          return System.Reflection.Assembly.LoadFrom( filename );
+        }
+      }
+
+      return null;
     }
 
     public Result Execute( 

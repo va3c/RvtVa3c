@@ -10,6 +10,7 @@ using Autodesk.Revit.Utility;
 using System.Xml.Linq;
 using System.Dynamic;
 using System.Runtime.Serialization.Json;
+using Newtonsoft.Json;
 #endregion
 
 namespace RvtVa3c
@@ -346,16 +347,18 @@ namespace RvtVa3c
 
       string filename = _output_folder_path + _doc.Title + ".js";
 
-      using( FileStream stream
-        = File.OpenWrite( filename ) )
-      {
-        DataContractJsonSerializer serialiser
-          = new DataContractJsonSerializer(
-            typeof( Va3cScene ) );
+      //using( FileStream stream
+      //  = File.OpenWrite( filename ) )
+      //{
+      //  DataContractJsonSerializer serialiser
+      //    = new DataContractJsonSerializer(
+      //      typeof( Va3cScene ) );
 
-        serialiser.WriteObject( stream, _scene );
-      }
+      //  serialiser.WriteObject( stream, _scene );
+      //}
 
+      File.WriteAllText( filename, 
+        JsonConvert.SerializeObject( _scene ) );
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 

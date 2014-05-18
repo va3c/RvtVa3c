@@ -45,6 +45,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RevitAPI">
       <HintPath>$(ProgramW6432)\Autodesk\Revit 2015\RevitAPI.dll</HintPath>
       <Private>False</Private>
@@ -69,6 +72,7 @@
     <Compile Include="Va3cScene.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="RvtVa3c.addin" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -78,6 +82,7 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2015"
-copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2015"</PostBuildEvent>
+copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2015"
+copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2015"</PostBuildEvent>
   </PropertyGroup>
 </Project>
