@@ -557,6 +557,11 @@ namespace RvtVa3c
       _currentGeometry.data.faces = new List<int>();
       _currentGeometry.data.vertices = new List<long>();
       _currentGeometry.data.normals = new List<double>();
+      _currentGeometry.data.visible = true;
+      _currentGeometry.data.castShadow = true;
+      _currentGeometry.data.receiveShadow = true;
+      _currentGeometry.data.doubleSided = true;
+      _currentGeometry.data.scale = 1.0;
 
       _vertices.Clear();
 
