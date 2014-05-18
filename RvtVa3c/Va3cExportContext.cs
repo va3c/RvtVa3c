@@ -15,6 +15,16 @@ using Newtonsoft.Json;
 
 namespace RvtVa3c
 {
+  // Todo:
+  // Implement the external application button
+  // Implement element properties
+  // Instance/type reuse
+  // Check instance transformation
+  // Check for file size
+  // Add scaling for Theo [(0,0),(20000,20000)]
+  // Eliminate multiple materials 
+  // Support transparency
+
   class Va3cExportContext : IExportContext
   {
     string _output_folder_path = "C:/a/vs/RvtVa3c/models/";
@@ -475,6 +485,7 @@ namespace RvtVa3c
 
     public void OnMaterial( MaterialNode node )
     {
+      Debug.WriteLine( "     --> On Material: " + node.MaterialId + ": " + node.NodeName );
       // OnMaterial method can be invoked for every 
       // single out-coming mesh even when the material 
       // has not actually changed. Thus it is usually
@@ -559,15 +570,32 @@ namespace RvtVa3c
       ElementId elementId )
     {
       Element e = _doc.GetElement( elementId );
+      string uid = e.UniqueId;
 
       Debug.WriteLine( string.Format(
         "OnElementBegin: id {0} category {1} name {2}",
         elementId.IntegerValue, e.Category.Name, e.Name ) );
 
+      if( _objects.ContainsKey( uid ) )
+      {
+        Debug.WriteLine( "\r\n*** Duplicate element!\r\n" );
+        return RenderNodeAction.Skip;
+      }
+
       _elementStack.Push( elementId );
 
       ICollection<ElementId> idsMaterialGeometry = e.GetMaterialIds( false );
       ICollection<ElementId> idsMaterialPaint = e.GetMaterialIds( true );
+
+      int n = idsMaterialGeometry.Count;
+
+      if( 1 < n )
+      {
+        Debug.Print( "{0} has {1} materials: {2}",
+          Util.ElementDescription( e ), n,
+          string.Join( ", ", idsMaterialGeometry.Select( 
+            id => _doc.GetElement( id ).Name ) ) );
+      }
 
       if( null != e.Category
         && null != e.Category.Material )
@@ -581,15 +609,15 @@ namespace RvtVa3c
       _currentObject = new Va3cScene.Va3cObject();
 
       _currentObject.name = Util.ElementDescription( e );
-      _currentObject.geometry = e.UniqueId;
+      _currentObject.geometry = uid;
       _currentObject.material = _currentMaterialUid;
       _currentObject.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
       _currentObject.type = "Mesh";
-      _currentObject.uuid = e.UniqueId;
+      _currentObject.uuid = uid;
 
       _currentGeometry = new Va3cScene.Va3cGeometry();
 
-      _currentGeometry.uuid = e.UniqueId;
+      _currentGeometry.uuid = uid;
       _currentGeometry.type = "Geometry";
       _currentGeometry.data = new Va3cScene.Va3cGeometryData();
       _currentGeometry.data.faces = new List<int>();
