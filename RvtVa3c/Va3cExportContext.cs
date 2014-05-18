@@ -27,7 +27,7 @@ namespace RvtVa3c
 
   class Va3cExportContext : IExportContext
   {
-    string _output_folder_path = "C:/a/vs/RvtVa3c/models/";
+    string _output_folder_path = "C:/a/vs/va3c/RvtVa3c/models/";
 
     /// <summary>
     /// If true, switch Y and Z coordinate 
@@ -212,23 +212,48 @@ namespace RvtVa3c
 
     Document _doc;
     Va3cScene _scene;
-    //VertexLookupXyz _vertices;
-    VertexLookupInt _vertices;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
     Dictionary<string, Va3cScene.Va3cObject> _objects;
     Dictionary<string, Va3cScene.Va3cGeometry> _geometries;
 
-    Va3cScene.Va3cObject _currentObject = null;
-    Va3cScene.Va3cGeometry _currentGeometry = null;
+    Va3cScene.Va3cObject _currentElement;
+    // keyed on material uid in case several materials per element:
+    Dictionary<string, Va3cScene.Va3cObject> _currentObject;
+    Dictionary<string, Va3cScene.Va3cGeometry> _currentGeometry;
+    Dictionary<string, VertexLookupInt> _vertices;
 
     Stack<ElementId> _elementStack = new Stack<ElementId>();
     Stack<Transform> _transformationStack = new Stack<Transform>();
 
     string _currentMaterialUid;
 
-    Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
+    Va3cScene.Va3cObject CurrentObjectPerMaterial
+    {
+      get
+      {
+        return _currentObject[_currentMaterialUid];
+      }
+    }
 
-    public uint CurrentPolymeshIndex { get; set; }
+    Va3cScene.Va3cGeometry CurrentGeometryPerMaterial
+    {
+      get
+      {
+        return _currentGeometry[_currentMaterialUid];
+      }
+    }
+
+    VertexLookupInt CurrentVerticesPerMaterial
+    {
+      get
+      {
+        return _vertices[_currentMaterialUid];
+      }
+    }
+
+    //Dictionary<uint, ElementId> polymeshToMaterialId = new Dictionary<uint, ElementId>();
+
+    //public uint CurrentPolymeshIndex { get; set; }
 
     ElementId CurrentElementId
     {
@@ -288,6 +313,43 @@ namespace RvtVa3c
         _materials.Add( uidMaterial, m );
       }
       _currentMaterialUid = uidMaterial;
+
+      string uid_per_material = _currentElement.uuid + "-" + uidMaterial;
+
+      if( !_currentObject.ContainsKey( uidMaterial ) )
+      {
+        Debug.Assert( !_currentGeometry.ContainsKey( uidMaterial ), "expected same keys in both" );
+
+        _currentObject.Add( uidMaterial, new Va3cScene.Va3cObject() );
+        CurrentObjectPerMaterial.name = _currentElement.name;
+        CurrentObjectPerMaterial.geometry = uid_per_material;
+        CurrentObjectPerMaterial.material = _currentMaterialUid;
+        CurrentObjectPerMaterial.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+        CurrentObjectPerMaterial.type = "Mesh";
+        CurrentObjectPerMaterial.uuid = uid_per_material;
+      }
+
+      if( !_currentGeometry.ContainsKey( uidMaterial ) )
+      {
+        _currentGeometry.Add( uidMaterial, new Va3cScene.Va3cGeometry() );
+        CurrentGeometryPerMaterial.uuid = uid_per_material;
+        CurrentGeometryPerMaterial.type = "Geometry";
+        CurrentGeometryPerMaterial.data = new Va3cScene.Va3cGeometryData();
+        CurrentGeometryPerMaterial.data.faces = new List<int>();
+        CurrentGeometryPerMaterial.data.vertices = new List<long>();
+        CurrentGeometryPerMaterial.data.normals = new List<double>();
+        CurrentGeometryPerMaterial.data.uvs = new List<double>();
+        CurrentGeometryPerMaterial.data.visible = true;
+        CurrentGeometryPerMaterial.data.castShadow = true;
+        CurrentGeometryPerMaterial.data.receiveShadow = false;
+        CurrentGeometryPerMaterial.data.doubleSided = true;
+        CurrentGeometryPerMaterial.data.scale = 1.0;
+      }
+
+      if( !_vertices.ContainsKey( uidMaterial ) )
+      {
+        _vertices.Add( uidMaterial, new VertexLookupInt() );
+      }
     }
 
     public Va3cExportContext( Document document )
@@ -299,7 +361,7 @@ namespace RvtVa3c
     {
       //_faces = new List<FaceMaterial>();
       _materials = new Dictionary<string, Va3cScene.Va3cMaterial>();
-      _vertices = new VertexLookupInt();
+      //_vertices = new VertexLookupInt();
       _geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
       _objects = new Dictionary<string, Va3cScene.Va3cObject>();
 
@@ -467,25 +529,27 @@ namespace RvtVa3c
           "      {0}: {1} {2} {3}", i++,
           facet.V1, facet.V2, facet.V3 ) );
 
-        v1 = _vertices.AddVertex( new PointInt(
+        v1 = CurrentVerticesPerMaterial.AddVertex( new PointInt(
           pts[facet.V1], _switch_coordinates ) );
 
-        v2 = _vertices.AddVertex( new PointInt(
+        v2 = CurrentVerticesPerMaterial.AddVertex( new PointInt(
           pts[facet.V2], _switch_coordinates ) );
 
-        v3 = _vertices.AddVertex( new PointInt(
+        v3 = CurrentVerticesPerMaterial.AddVertex( new PointInt(
           pts[facet.V3], _switch_coordinates ) );
 
-        _currentGeometry.data.faces.Add( 0 );
-        _currentGeometry.data.faces.Add( v1 );
-        _currentGeometry.data.faces.Add( v2 );
-        _currentGeometry.data.faces.Add( v3 );
+        CurrentGeometryPerMaterial.data.faces.Add( 0 );
+        CurrentGeometryPerMaterial.data.faces.Add( v1 );
+        CurrentGeometryPerMaterial.data.faces.Add( v2 );
+        CurrentGeometryPerMaterial.data.faces.Add( v3 );
       }
     }
 
     public void OnMaterial( MaterialNode node )
     {
-      Debug.WriteLine( "     --> On Material: " + node.MaterialId + ": " + node.NodeName );
+      Debug.WriteLine( "     --> On Material: " 
+        + node.MaterialId + ": " + node.NodeName );
+
       // OnMaterial method can be invoked for every 
       // single out-coming mesh even when the material 
       // has not actually changed. Thus it is usually
@@ -494,13 +558,10 @@ namespace RvtVa3c
       // actually changes.
 
       ElementId id = node.MaterialId;
-      string uid;
 
       if( ElementId.InvalidElementId != id )
       {
         Element m = _doc.GetElement( node.MaterialId );
-        uid = m.UniqueId;
-
         SetCurrentMaterial( m.UniqueId );
       }
       else
@@ -509,7 +570,7 @@ namespace RvtVa3c
         // transparency, etc. to avoid duplicating
         // non-element material definitions.
 
-        uid = Guid.NewGuid().ToString();
+        string uid = Guid.NewGuid().ToString();
 
         if( !_materials.ContainsKey( uid ) )
         {
@@ -529,7 +590,7 @@ namespace RvtVa3c
 
           _materials.Add( uid, m );
 
-          _currentMaterialUid = uid;
+          SetCurrentMaterial( uid );
         }
       }
     }
@@ -597,40 +658,30 @@ namespace RvtVa3c
             id => _doc.GetElement( id ).Name ) ) );
       }
 
+      // We handle a current element, which may either
+      // be identical to the current object and have
+      // one single current geometry or have 
+      // multiple current child objects each with a 
+      // separate current geometry.
+
+      _currentElement = new Va3cScene.Va3cObject();
+
+      _currentElement.name = Util.ElementDescription( e );
+      _currentElement.geometry = uid;
+      _currentElement.material = _currentMaterialUid;
+      _currentElement.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+      _currentElement.type = "Mesh";
+      _currentElement.uuid = uid;
+
+      _currentObject = new Dictionary<string,Va3cScene.Va3cObject>();
+      _currentGeometry = new Dictionary<string,Va3cScene.Va3cGeometry>();
+      _vertices = new Dictionary<string,VertexLookupInt>();
+
       if( null != e.Category
         && null != e.Category.Material )
       {
         SetCurrentMaterial( e.Category.Material.UniqueId );
-        //MaterialNode node = new MaterialNode();
-        //node.MaterialId = e.Category.Material.Id;
-        //OnMaterial( node );
       }
-
-      _currentObject = new Va3cScene.Va3cObject();
-
-      _currentObject.name = Util.ElementDescription( e );
-      _currentObject.geometry = uid;
-      _currentObject.material = _currentMaterialUid;
-      _currentObject.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-      _currentObject.type = "Mesh";
-      _currentObject.uuid = uid;
-
-      _currentGeometry = new Va3cScene.Va3cGeometry();
-
-      _currentGeometry.uuid = uid;
-      _currentGeometry.type = "Geometry";
-      _currentGeometry.data = new Va3cScene.Va3cGeometryData();
-      _currentGeometry.data.faces = new List<int>();
-      _currentGeometry.data.vertices = new List<long>();
-      _currentGeometry.data.normals = new List<double>();
-      _currentGeometry.data.uvs = new List<double>();
-      _currentGeometry.data.visible = true;
-      _currentGeometry.data.castShadow = true;
-      _currentGeometry.data.receiveShadow = false;
-      _currentGeometry.data.doubleSided = true;
-      _currentGeometry.data.scale = 1.0;
-
-      _vertices.Clear();
 
       return RenderNodeAction.Proceed;
     }
@@ -643,20 +694,29 @@ namespace RvtVa3c
 
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
 
-      foreach( KeyValuePair<PointInt,int> p in _vertices )
+      List<string> materials = _vertices.Keys.ToList();
+
+      int n = materials.Count;
+
+      _currentElement.children = new List<Va3cScene.Va3cObject>( n );
+
+      foreach( string material in materials )
       {
-        _currentGeometry.data.vertices.Add( p.Key.X );
-        _currentGeometry.data.vertices.Add( p.Key.Y );
-        _currentGeometry.data.vertices.Add( p.Key.Z );
+        Va3cScene.Va3cObject obj = _currentObject[material];
+        Va3cScene.Va3cGeometry geo = _currentGeometry[material];
+
+        foreach( KeyValuePair<PointInt, int> p in _vertices[material] )
+        {
+          geo.data.vertices.Add( p.Key.X );
+          geo.data.vertices.Add( p.Key.Y );
+          geo.data.vertices.Add( p.Key.Z );
+        }
+        obj.geometry = geo.uuid;
+        _geometries.Add( geo.uuid, geo );
+        _currentElement.children.Add( obj );
       }
 
-      _currentObject.geometry = _currentGeometry.uuid;
-
-      _objects.Add( _currentObject.uuid, _currentObject );
-      _currentObject = null;
-
-      _geometries.Add( _currentGeometry.uuid, _currentGeometry );
-      _currentGeometry = null;
+      _objects.Add( _currentElement.uuid, _currentElement );
 
       _elementStack.Pop();
     }
