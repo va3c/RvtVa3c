@@ -813,7 +813,7 @@
       "emissive": 0,
       "specular": 8421504,
       "shininess": 10,
-      "opacity": 1,
+      "opacity": 1.0,
       "transparent": false,
       "wireframe": false
     },
@@ -825,8 +825,8 @@
       "emissive": 0,
       "specular": 32960,
       "shininess": 64,
-      "opacity": 1,
-      "transparent": false,
+      "opacity": 0.25,
+      "transparent": true,
       "wireframe": false
     },
     {
@@ -837,7 +837,7 @@
       "emissive": 0,
       "specular": 14725758,
       "shininess": 128,
-      "opacity": 1,
+      "opacity": 1.0,
       "transparent": false,
       "wireframe": false
     }

@@ -11,7 +11,6 @@ using Autodesk.Revit.UI.Selection;
 
 namespace RvtVa3c
 {
-
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {

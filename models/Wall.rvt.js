@@ -1,7 +1,7 @@
 {
   "geometries": [
     {
-      "uuid": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a",
+      "uuid": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a-cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0",
       "type": "Geometry",
       "data": {
         "vertices": [
@@ -99,7 +99,7 @@
       "emissive": 0,
       "specular": 8421504,
       "shininess": 10,
-      "opacity": 1,
+      "opacity": 1.0,
       "transparent": false,
       "wireframe": false
     }
@@ -152,9 +152,35 @@
           0.0,
           1.0
         ],
+        "children": [
+          {
+            "uuid": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a-cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0",
+            "type": "Mesh",
+            "matrix": [
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "geometry": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a-cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0",
+            "name": "Wall Walls <322698 Generic - 200mm>",
+            "material": "cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0"
+          }
+        ],
         "geometry": "91e0c258-0500-4169-9074-0816995c8c42-0004ec8a",
-        "name": "Wall Walls <322698 Generic - 200mm>",
-        "material": "cb74be9d-0c49-4127-96a8-1de4e3dd00ba-00004aa0"
+        "name": "Wall Walls <322698 Generic - 200mm>"
       }
     ]
   }
