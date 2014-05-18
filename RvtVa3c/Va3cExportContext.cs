@@ -30,6 +30,11 @@ namespace RvtVa3c
     string _output_folder_path = "C:/a/vs/va3c/RvtVa3c/models/";
 
     /// <summary>
+    /// Scale the model down from millimetres to metres.
+    /// </summary>
+    double _scale = 0.001;
+
+    /// <summary>
     /// If true, switch Y and Z coordinate 
     /// and flip X to negative.
     /// </summary>
@@ -336,7 +341,7 @@ namespace RvtVa3c
         CurrentGeometryPerMaterial.type = "Geometry";
         CurrentGeometryPerMaterial.data = new Va3cScene.Va3cGeometryData();
         CurrentGeometryPerMaterial.data.faces = new List<int>();
-        CurrentGeometryPerMaterial.data.vertices = new List<long>();
+        CurrentGeometryPerMaterial.data.vertices = new List<double>();
         CurrentGeometryPerMaterial.data.normals = new List<double>();
         CurrentGeometryPerMaterial.data.uvs = new List<double>();
         CurrentGeometryPerMaterial.data.visible = true;
@@ -688,17 +693,17 @@ namespace RvtVa3c
     }
 
     public void OnElementEnd(
-      ElementId elementId )
+      ElementId id )
     {
       // Note: this method is invoked even for 
       // elements that were skipped.
 
-      Element e = _doc.GetElement( elementId );
+      Element e = _doc.GetElement( id );
       string uid = e.UniqueId;
 
       Debug.WriteLine( string.Format(
         "OnElementEnd: id {0} category {1} name {2}",
-        elementId.IntegerValue, e.Category.Name, e.Name ) );
+        id.IntegerValue, e.Category.Name, e.Name ) );
 
       if( _objects.ContainsKey( uid ) )
       {
@@ -719,14 +724,19 @@ namespace RvtVa3c
 
         foreach( KeyValuePair<PointInt, int> p in _vertices[material] )
         {
-          geo.data.vertices.Add( p.Key.X );
-          geo.data.vertices.Add( p.Key.Y );
-          geo.data.vertices.Add( p.Key.Z );
+          geo.data.vertices.Add( _scale * p.Key.X );
+          geo.data.vertices.Add( _scale * p.Key.Y );
+          geo.data.vertices.Add( _scale * p.Key.Z );
         }
         obj.geometry = geo.uuid;
         _geometries.Add( geo.uuid, geo );
         _currentElement.children.Add( obj );
       }
+
+      Dictionary<string, string> d 
+        = Util.GetElementProperties( e, true );
+
+      _currentElement.userData = d;
 
       _objects.Add( _currentElement.uuid, _currentElement );
 

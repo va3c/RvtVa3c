@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using System;
+using System.Collections.Generic;
 
 namespace RvtVa3c
 {
@@ -76,6 +77,57 @@ namespace RvtVa3c
       return string.Format( "{0} {1}{2}{3}<{4} {5}>",
         typeName, categoryName, familyName,
         symbolName, e.Id.IntegerValue, e.Name );
+    }
+    
+    /// <summary>
+    /// Return a dictionary of all the given 
+    /// element parameter names and values.
+    /// </summary>
+    public static Dictionary<string, string>
+      GetElementProperties(
+        Element e,
+        bool includeType )
+    {
+      IList<Parameter> parameters
+        = e.GetOrderedParameters();
+
+      Dictionary<string, string> a
+        = new Dictionary<string, string>(
+          parameters.Count );
+
+      string key;
+
+      foreach( Parameter p in parameters )
+      {
+        key = p.Definition.Name;
+
+        if( !a.ContainsKey( key ) )
+        {
+          a.Add( key, p.AsValueString() );
+        }
+      }
+
+      if( includeType )
+      {
+        ElementId idType = e.GetTypeId();
+
+        if( null != idType )
+        {
+          Document doc = e.Document;
+          Element typ = doc.GetElement( idType );
+          parameters = typ.GetOrderedParameters();
+          foreach( Parameter p in parameters )
+          {
+            key = "Type " + p.Definition.Name;
+
+            if( !a.ContainsKey( key ) )
+            {
+              a.Add( key, p.AsValueString() );
+            }
+          }
+        }
+      }
+      return a;
     }
   }
 }

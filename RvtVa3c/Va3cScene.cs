@@ -79,7 +79,7 @@ namespace RvtVa3c
       //jason.data.receiveShadow = false;
       //jason.data.doubleSided = true;
 
-      [DataMember] public List<long> vertices { get; set; } // millimetres
+      [DataMember] public List<double> vertices { get; set; } // millimetres
       // "morphTargets": []
       [DataMember] public List<double> normals { get; set; }
       // "colors": []
@@ -122,6 +122,7 @@ namespace RvtVa3c
       //[DataMember] public bool castShadow { get; set; }
       //[DataMember] public bool receiveShadow { get; set; }
       //[DataMember] public bool doubleSided { get; set; }
+      [DataMember] public Dictionary<string, string> userData { get; set; }
     }
 
     // https://github.com/mrdoob/three.js/wiki/JSON-Model-format-3
