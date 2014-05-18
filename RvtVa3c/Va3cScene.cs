@@ -81,7 +81,7 @@ namespace RvtVa3c
     [DataContract]
     public class Va3cGeometryData
     {
-      [DataMember] public List<int> vertices { get; set; } // millimetres
+      [DataMember] public List<long> vertices { get; set; } // millimetres
       // "morphTargets": []
       [DataMember] public List<double> normals { get; set; }
       // "colors": []

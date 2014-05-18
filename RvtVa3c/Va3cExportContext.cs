@@ -555,7 +555,7 @@ namespace RvtVa3c
       _currentGeometry.type = "Geometry";
       _currentGeometry.data = new Va3cScene.Va3cGeometryData();
       _currentGeometry.data.faces = new List<int>();
-      _currentGeometry.data.vertices = new List<int>();
+      _currentGeometry.data.vertices = new List<long>();
       _currentGeometry.data.normals = new List<double>();
 
       _vertices.Clear();
@@ -570,6 +570,13 @@ namespace RvtVa3c
       // elements that were skipped.
 
       Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
+
+      foreach( KeyValuePair<PointInt,int> p in _vertices )
+      {
+        _currentGeometry.data.vertices.Add( p.Key.X );
+        _currentGeometry.data.vertices.Add( p.Key.Y );
+        _currentGeometry.data.vertices.Add( p.Key.Z );
+      }
 
       _currentObject.geometry = _currentGeometry.uuid;
 
