@@ -19,6 +19,12 @@ namespace RvtVa3c
   {
     string _output_folder_path = "C:/a/vs/RvtVa3c/models/";
 
+    /// <summary>
+    /// If true, switch Y and Z coordinate 
+    /// and flip X to negative.
+    /// </summary>
+    bool _switch_coordinates = true;
+
     #region VertexLookupXyz
     /// <summary>
     /// A vertex lookup class to eliminate 
@@ -117,11 +123,19 @@ namespace RvtVa3c
         }
       }
 
-      public PointInt( XYZ p )
+      public PointInt( XYZ p, bool switch_coordinates )
       {
         X = ConvertFeetToMillimetres( p.X );
         Y = ConvertFeetToMillimetres( p.Y );
         Z = ConvertFeetToMillimetres( p.Z );
+
+        if( switch_coordinates )
+        {
+          X = -X;
+          long tmp = Y;
+          Y = Z;
+          Z = tmp;
+        }
       }
 
       public int CompareTo( PointInt a )
@@ -471,13 +485,13 @@ namespace RvtVa3c
           facet.V1, facet.V2, facet.V3 ) );
 
         v1 = _vertices.AddVertex( new PointInt(
-          pts[facet.V1] ) );
+          pts[facet.V1], _switch_coordinates ) );
 
         v2 = _vertices.AddVertex( new PointInt(
-          pts[facet.V2] ) );
+          pts[facet.V2], _switch_coordinates ) );
 
         v3 = _vertices.AddVertex( new PointInt(
-          pts[facet.V3] ) );
+          pts[facet.V3], _switch_coordinates ) );
 
         _currentGeometry.data.faces.Add( 0 );
         _currentGeometry.data.faces.Add( v1 );
