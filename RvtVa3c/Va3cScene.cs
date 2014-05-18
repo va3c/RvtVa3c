@@ -11,19 +11,6 @@ namespace RvtVa3c
   /// </summary>
   [DataContract] public class Va3cScene
   {
-    public class SceneMetadata
-    {
-      [DataMember] public double formatVersion { get; set; } //  3
-      [DataMember] public string generatedBy { get; set; } //  "RvtVa3c Revit va3c exporter"
-      [DataMember] public int vertices { get; set; } //  770
-      [DataMember] public int faces { get; set; } //  768
-      [DataMember] public int normals { get; set; } //  770
-      [DataMember] public int colors { get; set; } //  0
-      [DataMember] public int uvs { get; set; } //  0
-      [DataMember] public int materials { get; set; } //  1
-      [DataMember] public int morphTargets { get; set; } //  0
-    }
-
     public class Va3cMaterialMetadata
     {
       [DataMember] public double version { get; set; }
@@ -145,6 +132,20 @@ namespace RvtVa3c
     // 2, [vertex_index, vertex_index, vertex_index], [material_index]     // e.g.:
     //
     //2, 0,1,2, 0
+
+    public class SceneMetadata
+    {
+      [DataMember] public string type { get; set; } //  "Object"
+      [DataMember] public double formatVersion { get; set; } // 4.3
+      [DataMember] public string generator { get; set; } //  "RvtVa3c Revit va3c exporter"
+      //[DataMember] public int vertices { get; set; } //  770
+      //[DataMember] public int faces { get; set; } //  768
+      //[DataMember] public int normals { get; set; } //  770
+      //[DataMember] public int colors { get; set; } //  0
+      //[DataMember] public int uvs { get; set; } //  0
+      //[DataMember] public int materials { get; set; } //  1
+      //[DataMember] public int morphTargets { get; set; } //  0
+    }
 
     [DataMember] public SceneMetadata metadata { get; set; }
     //[DataMember] public Dictionary<string, Va3cObject> objects { get; set; }

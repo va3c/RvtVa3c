@@ -315,11 +315,12 @@ namespace RvtVa3c
       //_scene = new ExpandoObject();
 
       _scene.metadata = new Va3cScene.SceneMetadata();
-      _scene.metadata.colors = 0;
-      _scene.metadata.faces = 0;
-      _scene.metadata.formatVersion = 3;
-      _scene.metadata.generatedBy = "RvtVa3c Revit va3c exporter";
-      _scene.metadata.materials = 0;
+      _scene.metadata.type = "Object";
+      //_scene.metadata.colors = 0;
+      //_scene.metadata.faces = 0;
+      _scene.metadata.formatVersion = 4.3;
+      _scene.metadata.generator = "RvtVa3c Revit va3c exporter";
+      //_scene.metadata.materials = 0;
       _scene.geometries = new List<Va3cScene.Va3cGeometry>();
 
       _scene.obj = new Va3cScene.Va3cObject();
@@ -334,7 +335,7 @@ namespace RvtVa3c
     {
       // Finish populating scene
 
-      _scene.metadata.materials = _materials.Count;
+      //_scene.metadata.materials = _materials.Count;
       _scene.materials = _materials.Values.ToList();
 
       _scene.geometries = _geometries.Values.ToList();
@@ -546,7 +547,7 @@ namespace RvtVa3c
       _currentObject.geometry = e.UniqueId;
       _currentObject.material = _currentMaterialUid;
       _currentObject.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-      _currentObject.type = "mesh";
+      _currentObject.type = "Mesh";
       _currentObject.uuid = e.UniqueId;
 
       _currentGeometry = new Va3cScene.Va3cGeometry();
