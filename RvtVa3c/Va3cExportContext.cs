@@ -200,42 +200,11 @@ namespace RvtVa3c
     }
     #endregion // VertexLookupInt
 
-    //#region FaceMaterial
-    ///// <summary>
-    ///// A helper class containing three vertex lookup
-    ///// indices defining a facet, e.g. mesh triangle,
-    ///// plus the index into the material list to apply.
-    ///// </summary>
-    //class FaceMaterial
-    //{
-    //  int V1 { get; set; }
-    //  int V2 { get; set; }
-    //  int V3 { get; set; }
-    //  string MaterialUid { get; set; }
-    //  // we might want to keep track of this as well:
-    //  //ElementId ElementId { get; set; }
-    //  //int CategoryId { get; set; }
-    //  //ElementId MaterialId { get; set; }
-
-    //  public FaceMaterial( int v1, int v2, int v3, string material_uid )
-    //  {
-    //    V1 = v1;
-    //    V2 = v2;
-    //    V3 = v3;
-    //    MaterialUid = material_uid;
-    //  }
-    //}
-    //#endregion // FaceMaterial
-
     Document _doc;
     Va3cScene _scene;
-    //dynamic _scene;
-
     //VertexLookupXyz _vertices;
     VertexLookupInt _vertices;
-    //List<FaceMaterial> _faces;
     Dictionary<string, Va3cScene.Va3cMaterial> _materials;
-
     Dictionary<string, Va3cScene.Va3cObject> _objects;
     Dictionary<string, Va3cScene.Va3cGeometry> _geometries;
 
@@ -243,7 +212,7 @@ namespace RvtVa3c
     Va3cScene.Va3cGeometry _currentGeometry = null;
 
     Stack<ElementId> _elementStack = new Stack<ElementId>();
-    Stack<Transform> transformationStack = new Stack<Transform>();
+    Stack<Transform> _transformationStack = new Stack<Transform>();
 
     string _currentMaterialUid;
 
@@ -273,7 +242,7 @@ namespace RvtVa3c
     {
       get
       {
-        return transformationStack.Peek();
+        return _transformationStack.Peek();
       }
     }
 
@@ -324,7 +293,7 @@ namespace RvtVa3c
       _geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
       _objects = new Dictionary<string, Va3cScene.Va3cObject>();
 
-      transformationStack.Push( Transform.Identity );
+      _transformationStack.Push( Transform.Identity );
 
       _scene = new Va3cScene();
       //_scene = new ExpandoObject();
@@ -474,6 +443,10 @@ namespace RvtVa3c
         polymesh.DistributionOfNormals ) );
 
       IList<XYZ> pts = polymesh.GetPoints();
+
+      Transform t = CurrentTransform;
+
+      pts = pts.Select( p => t.OfPoint( p ) ).ToList();
 
       int i = 0, v1, v2, v3;
 
@@ -640,7 +613,7 @@ namespace RvtVa3c
     {
       Debug.WriteLine( "  OnInstanceBegin: " + node.NodeName + " symbol: " + node.GetSymbolId().IntegerValue );
       // This method marks the start of processing a family instance
-      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
+      _transformationStack.Push( CurrentTransform.Multiply( node.GetTransform() ) );
 
       // We can either skip this instance or proceed with rendering it.
       return RenderNodeAction.Proceed;
@@ -650,13 +623,13 @@ namespace RvtVa3c
     {
       Debug.WriteLine( "  OnInstanceEnd: " + node.NodeName );
       // Note: This method is invoked even for instances that were skipped.
-      transformationStack.Pop();
+      _transformationStack.Pop();
     }
 
     public RenderNodeAction OnLinkBegin( LinkNode node )
     {
       Debug.WriteLine( "  OnLinkBegin: " + node.NodeName + " Document: " + node.GetDocument().Title + ": Id: " + node.GetSymbolId().IntegerValue );
-      transformationStack.Push( transformationStack.Peek().Multiply( node.GetTransform() ) );
+      _transformationStack.Push( CurrentTransform.Multiply( node.GetTransform() ) );
       return RenderNodeAction.Proceed;
     }
 
@@ -664,7 +637,7 @@ namespace RvtVa3c
     {
       Debug.WriteLine( "  OnLinkEnd: " + node.NodeName );
       // Note: This method is invoked even for instances that were skipped.
-      transformationStack.Pop();
+      _transformationStack.Pop();
     }
 
     public void OnLight( LightNode node )
