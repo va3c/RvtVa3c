@@ -484,12 +484,12 @@ namespace RvtVa3c
 
     public void OnPolymesh( PolymeshTopology polymesh )
     {
-      Debug.WriteLine( string.Format(
-        "    OnPolymesh: {0} points, {1} facets, {2} normals {3}",
-        polymesh.NumberOfPoints,
-        polymesh.NumberOfFacets,
-        polymesh.NumberOfNormals,
-        polymesh.DistributionOfNormals ) );
+      //Debug.WriteLine( string.Format(
+      //  "    OnPolymesh: {0} points, {1} facets, {2} normals {3}",
+      //  polymesh.NumberOfPoints,
+      //  polymesh.NumberOfFacets,
+      //  polymesh.NumberOfNormals,
+      //  polymesh.DistributionOfNormals ) );
 
       IList<XYZ> pts = polymesh.GetPoints();
 
@@ -502,9 +502,9 @@ namespace RvtVa3c
       foreach( PolymeshFacet facet
         in polymesh.GetFacets() )
       {
-        Debug.WriteLine( string.Format(
-          "      {0}: {1} {2} {3}", i++,
-          facet.V1, facet.V2, facet.V3 ) );
+        //Debug.WriteLine( string.Format(
+        //  "      {0}: {1} {2} {3}", i++,
+        //  facet.V1, facet.V2, facet.V3 ) );
 
         v1 = CurrentVerticesPerMaterial.AddVertex( new PointInt(
           pts[facet.V1], _switch_coordinates ) );
@@ -524,8 +524,8 @@ namespace RvtVa3c
 
     public void OnMaterial( MaterialNode node )
     {
-      Debug.WriteLine( "     --> On Material: " 
-        + node.MaterialId + ": " + node.NodeName );
+      //Debug.WriteLine( "     --> On Material: " 
+      //  + node.MaterialId + ": " + node.NodeName );
 
       // OnMaterial method can be invoked for every 
       // single out-coming mesh even when the material 
@@ -651,7 +651,6 @@ namespace RvtVa3c
       _currentElement = new Va3cScene.Va3cObject();
 
       _currentElement.name = Util.ElementDescription( e );
-      //_currentElement.geometry = uid;
       _currentElement.material = _currentMaterialUid;
       _currentElement.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
       _currentElement.type = "RevitElement";
