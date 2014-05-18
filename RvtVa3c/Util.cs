@@ -111,7 +111,7 @@ namespace RvtVa3c
       {
         ElementId idType = e.GetTypeId();
 
-        if( null != idType )
+        if( ElementId.InvalidElementId != idType )
         {
           Document doc = e.Document;
           Element typ = doc.GetElement( idType );
