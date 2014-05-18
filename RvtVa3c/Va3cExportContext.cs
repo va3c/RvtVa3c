@@ -32,8 +32,9 @@ namespace RvtVa3c
 
     /// <summary>
     /// Scale the model down from millimetres to metres.
+    /// Nope, acually we stick with millimetres after all.
     /// </summary>
-    double _scale = 0.001;
+    double _scale = 1.0;
 
     /// <summary>
     /// If true, switch Y and Z coordinate 
