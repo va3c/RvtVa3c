@@ -15,15 +15,16 @@ using Newtonsoft.Json;
 
 namespace RvtVa3c
 {
-  // Todo:
+  // Done:
+  // Check instance transformation
+  // Support transparency
+  // Add scaling for Theo [(0,0),(20000,20000)]
   // Implement the external application button
   // Implement element properties
-  // Instance/type reuse
-  // Check instance transformation
-  // Check for file size
-  // Add scaling for Theo [(0,0),(20000,20000)]
+  // Todo:
   // Eliminate multiple materials 
-  // Support transparency
+  // Check for file size
+  // Instance/type reuse
 
   class Va3cExportContext : IExportContext
   {
@@ -575,7 +576,12 @@ namespace RvtVa3c
         // transparency, etc. to avoid duplicating
         // non-element material definitions.
 
-        string uid = Guid.NewGuid().ToString();
+        //string uid = Guid.NewGuid().ToString();
+
+        int iColor = Util.ColorToInt( node.Color );
+
+        string uid = string.Format( "MaterialNode_{0}_{1}",
+          iColor, Util.RealString( node.Transparency * 100 ) );
 
         if( !_materials.ContainsKey( uid ) )
         {
@@ -584,7 +590,7 @@ namespace RvtVa3c
 
           m.uuid = uid;
           m.type = "MeshPhongMaterial";
-          m.color = Util.ColorToInt( node.Color );
+          m.color = iColor;
           m.ambient = m.color;
           m.emissive = 0;
           m.specular = m.color;
@@ -595,9 +601,8 @@ namespace RvtVa3c
           m.wireframe = false;
 
           _materials.Add( uid, m );
-
-          SetCurrentMaterial( uid );
         }
+        SetCurrentMaterial( uid );
       }
     }
 
