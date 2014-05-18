@@ -139,7 +139,6 @@ namespace RvtVa3c
           //  DataContractJsonSerializer serialiser
           //    = new DataContractJsonSerializer(
           //      typeof( Va3cScene ) );
-
           //  serialiser.WriteObject( stream, _scene );
           //}
 

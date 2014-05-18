@@ -1,15 +1,13 @@
 ﻿#region Namespaces
 using System;
 using System.Collections.Generic;
+//using System.Dynamic;
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
+//using System.Runtime.Serialization.Json;
 using Autodesk.Revit.DB;
-using System.Text;
 using Autodesk.Revit.Utility;
-using System.Xml.Linq;
-using System.Dynamic;
-using System.Runtime.Serialization.Json;
 using Newtonsoft.Json;
 #endregion
 
@@ -22,10 +20,10 @@ namespace RvtVa3c
   // Implement the external application button
   // Implement element properties
   // Eliminate multiple materials 
+  // Prompt user for output file name and location
   // Todo:
   // Check for file size
   // Instance/type reuse
-  // Prompt user for output file name and location
 
   class Va3cExportContext : IExportContext
   {
@@ -224,7 +222,9 @@ namespace RvtVa3c
     Dictionary<string, Va3cScene.Va3cGeometry> _geometries;
 
     Va3cScene.Va3cObject _currentElement;
-    // keyed on material uid in case several materials per element:
+
+    // Keyed on material uid to handle several materials per element:
+
     Dictionary<string, Va3cScene.Va3cObject> _currentObject;
     Dictionary<string, Va3cScene.Va3cGeometry> _currentGeometry;
     Dictionary<string, VertexLookupInt> _vertices;
@@ -406,15 +406,6 @@ namespace RvtVa3c
       _scene.obj.children = _objects.Values.ToList();
 
       // Serialise scene
-
-      //using( FileStream stream
-      //  = File.OpenWrite( filename ) )
-      //{
-      //  DataContractJsonSerializer serialiser
-      //    = new DataContractJsonSerializer(
-      //      typeof( Va3cScene ) );
-      //  serialiser.WriteObject( stream, _scene );
-      //}
 
       JsonSerializerSettings settings
         = new JsonSerializerSettings();
@@ -604,7 +595,9 @@ namespace RvtVa3c
 
     public bool IsCanceled()
     {
-      // This method is invoked many times during the export process.
+      // This method is invoked many 
+      // times during the export process.
+
       return false;
     }
 
@@ -746,7 +739,9 @@ namespace RvtVa3c
 
     public RenderNodeAction OnFaceBegin( FaceNode node )
     {
-      // This method is invoked only if the custom exporter was set to include faces.
+      // This method is invoked only if the 
+      // custom exporter was set to include faces.
+
       Debug.Assert( false, "we set exporter.IncludeFaces false" );
       Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
       return RenderNodeAction.Proceed;
@@ -754,7 +749,9 @@ namespace RvtVa3c
 
     public void OnFaceEnd( FaceNode node )
     {
-      // This method is invoked only if the custom exporter was set to include faces.
+      // This method is invoked only if the 
+      // custom exporter was set to include faces.
+
       Debug.Assert( false, "we set exporter.IncludeFaces false" );
       Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
       // Note: This method is invoked even for faces that were skipped.
