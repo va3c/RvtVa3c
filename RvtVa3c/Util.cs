@@ -104,7 +104,14 @@ namespace RvtVa3c
 
         if( !a.ContainsKey( key ) )
         {
-          val = p.AsValueString();
+          if( StorageType.String == p.StorageType )
+          {
+            val = p.AsString();
+          }
+          else
+          {
+            val = p.AsValueString();
+          }
 
           if( !string.IsNullOrEmpty( val ) )
           {
@@ -128,7 +135,14 @@ namespace RvtVa3c
 
             if( !a.ContainsKey( key ) )
             {
-              val = p.AsValueString();
+              if( StorageType.String == p.StorageType )
+              {
+                val = p.AsString();
+              }
+              else
+              {
+                val = p.AsValueString();
+              }
 
               if( !string.IsNullOrEmpty( val ) )
               {
