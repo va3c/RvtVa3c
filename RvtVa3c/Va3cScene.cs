@@ -11,16 +11,16 @@ namespace RvtVa3c
   /// </summary>
   [DataContract] public class Va3cScene
   {
-    public class Va3cMaterialMetadata
-    {
-      [DataMember] public double version { get; set; }
-      [DataMember] public string type { get; set; }
-      [DataMember] public string generator { get; set; }
-    }
+    //public class Va3cMaterialMetadata
+    //{
+    //  [DataMember] public double version { get; set; }
+    //  [DataMember] public string type { get; set; }
+    //  [DataMember] public string generator { get; set; }
+    //}
 
     public class Va3cMaterial
     {
-      [DataMember] public Va3cMaterialMetadata metadata { get; set; }
+      //[DataMember] public Va3cMaterialMetadata metadata { get; set; }
       [DataMember] public string uuid { get; set; }
       [DataMember] public string type { get; set; } // MeshPhongMaterial
       [DataMember] public int color { get; set; } // 16777215
@@ -83,7 +83,7 @@ namespace RvtVa3c
       // "morphTargets": []
       [DataMember] public List<double> normals { get; set; }
       // "colors": []
-      // "uvs": [[]]
+      [DataMember] public List<double> uvs { get; set; }
       [DataMember] public List<int> faces { get; set; } // indices into Vertices + Materials
       [DataMember] public double scale { get; set; }
       [DataMember] public bool visible { get; set; }

@@ -276,10 +276,10 @@ namespace RvtVa3c
         Va3cScene.Va3cMaterial m
           = new Va3cScene.Va3cMaterial();
 
-        m.metadata = new Va3cScene.Va3cMaterialMetadata();
-        m.metadata.type = "material";
-        m.metadata.version = 4.2;
-        m.metadata.generator = "RvtVa3c 2015.0.0.0";
+        //m.metadata = new Va3cScene.Va3cMaterialMetadata();
+        //m.metadata.type = "material";
+        //m.metadata.version = 4.2;
+        //m.metadata.generator = "RvtVa3c 2015.0.0.0";
 
         m.uuid = uidMaterial;
         m.type = "MeshPhongMaterial";
@@ -288,7 +288,7 @@ namespace RvtVa3c
         m.emissive = 0;
         m.specular = m.color;
         m.shininess = material.Shininess; // todo: does this need scaling to e.g. [0,100]?
-        m.opacity = 128 - material.Transparency;
+        m.opacity = 1; // 128 - material.Transparency;
         m.transparent = false;
         m.wireframe = false;
 
@@ -561,9 +561,10 @@ namespace RvtVa3c
       _currentGeometry.data.faces = new List<int>();
       _currentGeometry.data.vertices = new List<long>();
       _currentGeometry.data.normals = new List<double>();
+      _currentGeometry.data.uvs = new List<double>();
       _currentGeometry.data.visible = true;
       _currentGeometry.data.castShadow = true;
-      _currentGeometry.data.receiveShadow = true;
+      _currentGeometry.data.receiveShadow = false;
       _currentGeometry.data.doubleSided = true;
       _currentGeometry.data.scale = 1.0;
 
