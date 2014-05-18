@@ -693,7 +693,18 @@ namespace RvtVa3c
       // Note: this method is invoked even for 
       // elements that were skipped.
 
-      Debug.WriteLine( "OnElementEnd: " + elementId.IntegerValue );
+      Element e = _doc.GetElement( elementId );
+      string uid = e.UniqueId;
+
+      Debug.WriteLine( string.Format(
+        "OnElementEnd: id {0} category {1} name {2}",
+        elementId.IntegerValue, e.Category.Name, e.Name ) );
+
+      if( _objects.ContainsKey( uid ) )
+      {
+        Debug.WriteLine( "\r\n*** Duplicate element!\r\n" );
+        return;
+      }
 
       List<string> materials = _vertices.Keys.ToList();
 
