@@ -477,7 +477,7 @@ namespace RvtVa3c
           pts[facet.V2] ) );
 
         v3 = _vertices.AddVertex( new PointInt(
-          pts[facet.V2] ) );
+          pts[facet.V3] ) );
 
         _currentGeometry.data.faces.Add( 0 );
         _currentGeometry.data.faces.Add( v1 );
