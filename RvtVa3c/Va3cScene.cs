@@ -82,8 +82,9 @@ namespace RvtVa3c
     public class Va3cGeometry
     {
       [DataMember] public string uuid { get; set; }
+      [DataMember] public string type { get; set; } // "Geometry"
       //[DataMember] public double scale { get; set; }
-      [DataMember]       public List<Va3cMaterial> materials { get; set; }
+      [DataMember] public List<Va3cMaterial> materials { get; set; }
       [DataMember] public List<int> vertices { get; set; } // millimetres
       // "morphTargets": []
       [DataMember] public List<double> normals { get; set; }

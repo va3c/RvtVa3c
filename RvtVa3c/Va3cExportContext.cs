@@ -562,6 +562,7 @@ namespace RvtVa3c
       _currentGeometry = new Va3cScene.Va3cGeometry();
 
       _currentGeometry.uuid = e.UniqueId;
+      _currentGeometry.type = "Geometry";
       _currentGeometry.faces = new List<int>();
       _currentGeometry.vertices = new List<int>();
       _currentGeometry.normals = new List<double>();
