@@ -357,8 +357,15 @@ namespace RvtVa3c
       //  serialiser.WriteObject( stream, _scene );
       //}
 
+      JsonSerializerSettings settings 
+        = new JsonSerializerSettings();
+
+      settings.NullValueHandling 
+        = NullValueHandling.Ignore;
+
       File.WriteAllText( filename, 
-        JsonConvert.SerializeObject( _scene ) );
+        JsonConvert.SerializeObject( _scene, 
+          Formatting.Indented, settings ) );
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
