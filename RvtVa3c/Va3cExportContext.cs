@@ -482,8 +482,45 @@ namespace RvtVa3c
       // only get its attributes when the material 
       // actually changes.
 
-      Element m = _doc.GetElement( node.MaterialId );
-      SetCurrentMaterial( m.UniqueId );
+      ElementId id = node.MaterialId;
+      string uid;
+
+      if( ElementId.InvalidElementId != id )
+      {
+        Element m = _doc.GetElement( node.MaterialId );
+        uid = m.UniqueId;
+
+        SetCurrentMaterial( m.UniqueId );
+      }
+      else
+      {
+        // Todo: generate a GUID based on colour, 
+        // transparency, etc. to avoid duplicating
+        // non-element material definitions.
+
+        uid = Guid.NewGuid().ToString();
+
+        if( !_materials.ContainsKey( uid ) )
+        {
+          Va3cScene.Va3cMaterial m
+            = new Va3cScene.Va3cMaterial();
+
+          m.uuid = uid;
+          m.type = "MeshPhongMaterial";
+          m.color = Util.ColorToInt( node.Color );
+          m.ambient = m.color;
+          m.emissive = 0;
+          m.specular = m.color;
+          m.shininess = node.Glossiness; // todo: does this need scaling to e.g. [0,100]?
+          m.opacity = 1; // 128 - material.Transparency;
+          m.transparent = false;
+          m.wireframe = false;
+
+          _materials.Add( uid, m );
+
+          _currentMaterialUid = uid;
+        }
+      }
     }
 
     public bool IsCanceled()
@@ -536,6 +573,9 @@ namespace RvtVa3c
         && null != e.Category.Material )
       {
         SetCurrentMaterial( e.Category.Material.UniqueId );
+        //MaterialNode node = new MaterialNode();
+        //node.MaterialId = e.Category.Material.Id;
+        //OnMaterial( node );
       }
 
       _currentObject = new Va3cScene.Va3cObject();
