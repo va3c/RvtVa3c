@@ -96,6 +96,7 @@ namespace RvtVa3c
           parameters.Count );
 
       string key;
+      string val;
 
       foreach( Parameter p in parameters )
       {
@@ -103,7 +104,12 @@ namespace RvtVa3c
 
         if( !a.ContainsKey( key ) )
         {
-          a.Add( key, p.AsValueString() );
+          val = p.AsValueString();
+
+          if( !string.IsNullOrEmpty( val ) )
+          {
+            a.Add( key, val );
+          }
         }
       }
 
@@ -122,7 +128,12 @@ namespace RvtVa3c
 
             if( !a.ContainsKey( key ) )
             {
-              a.Add( key, p.AsValueString() );
+              val = p.AsValueString();
+
+              if( !string.IsNullOrEmpty( val ) )
+              {
+                a.Add( key, val );
+              }
             }
           }
         }
