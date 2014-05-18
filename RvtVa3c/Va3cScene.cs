@@ -136,7 +136,7 @@ namespace RvtVa3c
     public class SceneMetadata
     {
       [DataMember] public string type { get; set; } //  "Object"
-      [DataMember] public double formatVersion { get; set; } // 4.3
+      [DataMember] public double version { get; set; } // 4.3
       [DataMember] public string generator { get; set; } //  "RvtVa3c Revit va3c exporter"
       //[DataMember] public int vertices { get; set; } //  770
       //[DataMember] public int faces { get; set; } //  768

@@ -319,7 +319,7 @@ namespace RvtVa3c
       _scene.metadata.type = "Object";
       //_scene.metadata.colors = 0;
       //_scene.metadata.faces = 0;
-      _scene.metadata.formatVersion = 4.3;
+      _scene.metadata.version = 4.3;
       _scene.metadata.generator = "RvtVa3c Revit va3c exporter";
       //_scene.metadata.materials = 0;
       _scene.geometries = new List<Va3cScene.Va3cGeometry>();
@@ -391,7 +391,7 @@ namespace RvtVa3c
 
       //populate geometry object
       jason.geometry.metadata = new ExpandoObject();
-      jason.geometry.metadata.formatVersion = 3.1;
+      jason.geometry.metadata.version = 3.1;
       jason.geometry.metadata.generatedBy = "RvtVa3c Revit va3c exporter";
       jason.geometry.metadata.vertices = mesh.Vertices.Count;
       jason.geometry.metadata.faces = mesh.Faces.Count;
