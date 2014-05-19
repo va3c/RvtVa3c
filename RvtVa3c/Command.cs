@@ -17,40 +17,34 @@ namespace RvtVa3c
   [Transaction( TransactionMode.Manual )]
   public class Command : IExternalCommand
   {
-    static string _output_folder_path = null;
-
-    #region SelectFile
     /// <summary>
-    /// Return true is user selects and confirms
-    /// output file name and folder.
+    /// Custom assembly resolver to find our support
+    /// DLL without being forced to place our entire 
+    /// application in a subfolder of the Revit.exe
+    /// directory.
     /// </summary>
-    static bool SelectFile(
-      ref string folder_path,
-      ref string filename )
+    System.Reflection.Assembly
+      CurrentDomain_AssemblyResolve(
+        object sender,
+        ResolveEventArgs args )
     {
-      SaveFileDialog dlg = new SaveFileDialog();
-
-      dlg.Title = "JSelect SON Output File";
-      dlg.Filter = "JSON files|*.js";
-
-      if( null != folder_path
-        && 0 < folder_path.Length )
+      if( args.Name.Contains( "Newtonsoft" ) )
       {
-        dlg.InitialDirectory = folder_path;
+        string filename = Path.GetDirectoryName(
+          System.Reflection.Assembly
+            .GetExecutingAssembly().Location );
+
+        filename = Path.Combine( filename,
+          "Newtonsoft.Json.dll" );
+
+        if( File.Exists( filename ) )
+        {
+          return System.Reflection.Assembly
+            .LoadFrom( filename );
+        }
       }
-
-      dlg.FileName = filename;
-
-      if (DialogResult.OK == dlg.ShowDialog())
-      {
-          folder_path = Path.GetDirectoryName(dlg.FileName);
-          filename = Path.GetFileName(dlg.FileName);
-          return true;
-      }
-      return false;
-
+      return null;
     }
-    #endregion // SelectFile
 
     /// <summary>
     /// Export a given 3D view to JSON using
@@ -58,7 +52,7 @@ namespace RvtVa3c
     /// </summary>
     void ExportView3D( View3D view3d, string filename )
     {
-      AppDomain.CurrentDomain.AssemblyResolve 
+      AppDomain.CurrentDomain.AssemblyResolve
         += CurrentDomain_AssemblyResolve;
 
       Document doc = view3d.Document;
@@ -81,38 +75,50 @@ namespace RvtVa3c
       exporter.Export( view3d );
     }
 
+    #region SelectFile
     /// <summary>
-    /// Custom assembly resolver to find our support
-    /// DLL without being forced to place our entire 
-    /// application in a subfolder of the Revit.exe
-    /// directory.
+    /// Store the last user selected output folder
+    /// in the current editing session.
     /// </summary>
-    System.Reflection.Assembly 
-      CurrentDomain_AssemblyResolve( 
-        object sender, 
-        ResolveEventArgs args )
+    static string _output_folder_path = null;
+
+    /// <summary>
+    /// Return true is user selects and confirms
+    /// output file name and folder.
+    /// </summary>
+    static bool SelectFile(
+      ref string folder_path,
+      ref string filename )
     {
-      if( args.Name.Contains( "Newtonsoft" ) )
+      SaveFileDialog dlg = new SaveFileDialog();
+
+      dlg.Title = "JSelect SON Output File";
+      dlg.Filter = "JSON files|*.js";
+
+      if( null != folder_path
+        && 0 < folder_path.Length )
       {
-        string filename = Path.GetDirectoryName(
-          System.Reflection.Assembly
-            .GetExecutingAssembly().Location );
-
-        filename = Path.Combine( filename, 
-          "Newtonsoft.Json.dll" );
-
-        if( File.Exists( filename ) )
-        {
-          return System.Reflection.Assembly
-            .LoadFrom( filename );
-        }
+        dlg.InitialDirectory = folder_path;
       }
-      return null;
-    }
 
-    public Result Execute( 
-      ExternalCommandData commandData, 
-      ref string message, 
+      dlg.FileName = filename;
+
+      bool rc = DialogResult.OK == dlg.ShowDialog();
+
+      if( rc )
+      {
+        filename = Path.GetFileName( dlg.FileName );
+
+        folder_path = Path.GetDirectoryName( 
+          filename );
+      }
+      return rc;
+    }
+    #endregion // SelectFile
+
+    public Result Execute(
+      ExternalCommandData commandData,
+      ref string message,
       ElementSet elements )
     {
       UIApplication uiapp = commandData.Application;
@@ -129,27 +135,18 @@ namespace RvtVa3c
         }
         if( null == _output_folder_path )
         {
-          _output_folder_path = Path.GetDirectoryName( 
+          _output_folder_path = Path.GetDirectoryName(
             filename );
         }
         filename = Path.GetFileName( filename ) + ".js";
 
-        if( SelectFile( ref _output_folder_path, 
+        if( SelectFile( ref _output_folder_path,
           ref filename ) )
         {
-          filename = Path.Combine( _output_folder_path, 
+          filename = Path.Combine( _output_folder_path,
             filename );
 
-          //using( FileStream stream
-          //  = File.OpenWrite( filename ) )
-          //{
-          //  DataContractJsonSerializer serialiser
-          //    = new DataContractJsonSerializer(
-          //      typeof( Va3cScene ) );
-          //  serialiser.WriteObject( stream, _scene );
-          //}
-
-          ExportView3D( doc.ActiveView as View3D, 
+          ExportView3D( doc.ActiveView as View3D,
             filename );
 
           return Result.Succeeded;
@@ -158,7 +155,7 @@ namespace RvtVa3c
       }
       else
       {
-        TaskDialog.Show( "va3c", 
+        TaskDialog.Show( "va3c",
           "You must be in 3D view to export." );
       }
       return Result.Failed;

@@ -297,7 +297,7 @@ namespace RvtVa3c
         m.emissive = 0;
         m.specular = m.color;
         m.shininess = material.Shininess; // todo: does this need scaling to e.g. [0,100]?
-        m.opacity = 0.01 * (double)(100 - material.Transparency); // Revit has material.Transparency in [0,100], three.js expects opacity in [0.0,1.0]
+        m.opacity = 0.01 * (double) ( 100 - material.Transparency ); // Revit has material.Transparency in [0,100], three.js expects opacity in [0.0,1.0]
         m.transparent = 0 < material.Transparency;
         m.wireframe = false;
 
@@ -390,6 +390,15 @@ namespace RvtVa3c
       _scene.obj.children = _objects.Values.ToList();
 
       // Serialise scene
+
+      //using( FileStream stream
+      //  = File.OpenWrite( filename ) )
+      //{
+      //  DataContractJsonSerializer serialiser
+      //    = new DataContractJsonSerializer(
+      //      typeof( Va3cScene ) );
+      //  serialiser.WriteObject( stream, _scene );
+      //}
 
       JsonSerializerSettings settings
         = new JsonSerializerSettings();
@@ -638,7 +647,7 @@ namespace RvtVa3c
       {
         Debug.Print( "{0} has {1} materials: {2}",
           Util.ElementDescription( e ), n,
-          string.Join( ", ", idsMaterialGeometry.Select( 
+          string.Join( ", ", idsMaterialGeometry.Select(
             id => _doc.GetElement( id ).Name ) ) );
       }
 
@@ -656,9 +665,9 @@ namespace RvtVa3c
       _currentElement.type = "RevitElement";
       _currentElement.uuid = uid;
 
-      _currentObject = new Dictionary<string,Va3cScene.Va3cObject>();
-      _currentGeometry = new Dictionary<string,Va3cScene.Va3cGeometry>();
-      _vertices = new Dictionary<string,VertexLookupInt>();
+      _currentObject = new Dictionary<string, Va3cScene.Va3cObject>();
+      _currentGeometry = new Dictionary<string, Va3cScene.Va3cGeometry>();
+      _vertices = new Dictionary<string, VertexLookupInt>();
 
       if( null != e.Category
         && null != e.Category.Material )
@@ -710,7 +719,7 @@ namespace RvtVa3c
         _currentElement.children.Add( obj );
       }
 
-      Dictionary<string, string> d 
+      Dictionary<string, string> d
         = Util.GetElementProperties( e, true );
 
       _currentElement.userData = d;
