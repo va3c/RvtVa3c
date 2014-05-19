@@ -41,7 +41,14 @@ namespace RvtVa3c
 
       dlg.FileName = filename;
 
-      return DialogResult.OK == dlg.ShowDialog();
+      if (DialogResult.OK == dlg.ShowDialog())
+      {
+          folder_path = Path.GetDirectoryName(dlg.FileName);
+          filename = Path.GetFileName(dlg.FileName);
+          return true;
+      }
+      return false;
+
     }
     #endregion // SelectFile
 
