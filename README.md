@@ -16,3 +16,8 @@ RvtVa3c -- va3c Exporter
 ------------------------
 
 http://thebuildingcoder.typepad.com/blog/2014/05/aec-hackathon-from-the-midst-of-the-fray.html
+
+Wishlist
+--------
+
+* Texture support
