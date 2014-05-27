@@ -20,4 +20,4 @@ http://thebuildingcoder.typepad.com/blog/2014/05/aec-hackathon-from-the-midst-of
 Wishlist
 --------
 
-* Texture support
+* Texture support and improved colour handling
