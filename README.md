@@ -21,3 +21,4 @@ Wishlist
 --------
 
 * Texture support and improved colour handling
+* Improved handling of normals to gracefully display non-planar surfaces
