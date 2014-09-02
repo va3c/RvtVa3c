@@ -1,11 +1,9 @@
 ﻿#region Namespaces
 using System;
 using System.Collections.Generic;
-//using System.Dynamic;
 using System.Linq;
 using System.Diagnostics;
 using System.IO;
-//using System.Runtime.Serialization.Json;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.Utility;
 using Newtonsoft.Json;
@@ -367,7 +365,7 @@ namespace RvtVa3c
       //_scene.metadata.colors = 0;
       //_scene.metadata.faces = 0;
       _scene.metadata.version = 4.3;
-      _scene.metadata.generator = "RvtVa3c Revit va3c exporter";
+      _scene.metadata.generator = "RvtVa3c Revit vA3C exporter";
       //_scene.metadata.materials = 0;
       _scene.geometries = new List<Va3cScene.Va3cGeometry>();
 

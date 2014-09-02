@@ -92,7 +92,7 @@ namespace RvtVa3c
     {
       SaveFileDialog dlg = new SaveFileDialog();
 
-      dlg.Title = "JSelect SON Output File";
+      dlg.Title = "Select JSON Output File";
       dlg.Filter = "JSON files|*.js";
 
       if( null != folder_path
@@ -155,7 +155,7 @@ namespace RvtVa3c
       }
       else
       {
-        TaskDialog.Show( "va3c",
+        TaskDialog.Show( "vA3C",
           "You must be in 3D view to export." );
       }
       return Result.Failed;

@@ -32,5 +32,9 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "2015.0.0.18" )]
-[assembly: AssemblyFileVersion( "2015.0.0.18" )]
+//
+// History:
+// 2014-09-02 2015.0.0.19 minor cleanup before removing scene definition
+//
+[assembly: AssemblyVersion( "2015.0.0.19" )]
+[assembly: AssemblyFileVersion( "2015.0.0.19" )]

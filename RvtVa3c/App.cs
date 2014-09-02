@@ -22,11 +22,11 @@ namespace RvtVa3c
         .Location;
 
       RibbonItemData i1 = new PushButtonData(
-          "RvtVa3c_Command", "Va3c \r\n Export",
+          "RvtVa3c_Command", "vA3C \r\n Export",
           path, "RvtVa3c.Command" );
 
-      i1.ToolTip = "Export three.js JSON scene "
-        + "for va3c AEC viewer";
+      i1.ToolTip = "Export three.js JSON objects "
+        + "for vA3C AEC viewer";
 
       //p.AddStackedItems( i1, i2, i3 );
 
@@ -37,7 +37,7 @@ namespace RvtVa3c
     {
       PopulatePanel(
         a.CreateRibbonPanel(
-          "Va3c Export" ) );
+          "vA3C Export" ) );
 
       return Result.Succeeded;
     }
