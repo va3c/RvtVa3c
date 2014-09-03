@@ -9,7 +9,7 @@ namespace RvtVa3c
   /// <summary>
   /// three.js scene class
   /// </summary>
-  [DataContract] public class Va3cScene
+  [DataContract] public class Va3cSceneObsolete
   {
     //public class Va3cMaterialMetadata
     //{

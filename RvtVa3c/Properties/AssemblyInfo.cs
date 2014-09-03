@@ -36,6 +36,7 @@ using System.Runtime.InteropServices;
 // History:
 // 2014-09-02 2015.0.0.19 minor cleanup before removing scene definition
 // 2014-09-03 2015.0.0.20 fixed bug in SelectFile, need to determine full output path
+// 2014-09-03 2015.0.0.21 replace top level json container Scene for Object3D
 //
-[assembly: AssemblyVersion( "2015.0.0.20" )]
-[assembly: AssemblyFileVersion( "2015.0.0.20" )]
+[assembly: AssemblyVersion( "2015.0.0.21" )]
+[assembly: AssemblyFileVersion( "2015.0.0.21" )]

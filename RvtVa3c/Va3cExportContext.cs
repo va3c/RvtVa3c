@@ -28,10 +28,22 @@ namespace RvtVa3c
   class Va3cExportContext : IExportContext
   {
     /// <summary>
-    /// Scale the model down from millimetres to metres.
-    /// Nope, acually we stick with millimetres after all.
+    /// Scale entire top level BIM object nove in JSON
+    /// output. A scale of 1.0 will output the model in 
+    /// millimetres. Currently we scale it to decimetres
+    /// so that a typical model has a chance of fitting 
+    /// into a cube with side length 100, i.e. 10 metres.
     /// </summary>
-    double _scale = 1.0;
+    double _scale_bim = 0.01;
+
+    /// <summary>
+    /// Scale applied to each vertex in each individual 
+    /// BIM element. This can be used to scale the model 
+    /// down from millimetres to metres, e.g.
+    /// Currently we stick with millimetres after all
+    /// at this level.
+    /// </summary>
+    double _scale_vertex = 1.0;
 
     /// <summary>
     /// If true, switch Y and Z coordinate 
@@ -220,17 +232,17 @@ namespace RvtVa3c
 
     Document _doc;
     string _filename;
-    Va3cScene _scene;
-    Dictionary<string, Va3cScene.Va3cMaterial> _materials;
-    Dictionary<string, Va3cScene.Va3cObject> _objects;
-    Dictionary<string, Va3cScene.Va3cGeometry> _geometries;
+    Va3cContainer _container;
+    Dictionary<string, Va3cContainer.Va3cMaterial> _materials;
+    Dictionary<string, Va3cContainer.Va3cObject> _objects;
+    Dictionary<string, Va3cContainer.Va3cGeometry> _geometries;
 
-    Va3cScene.Va3cObject _currentElement;
+    Va3cContainer.Va3cObject _currentElement;
 
     // Keyed on material uid to handle several materials per element:
 
-    Dictionary<string, Va3cScene.Va3cObject> _currentObject;
-    Dictionary<string, Va3cScene.Va3cGeometry> _currentGeometry;
+    Dictionary<string, Va3cContainer.Va3cObject> _currentObject;
+    Dictionary<string, Va3cContainer.Va3cGeometry> _currentGeometry;
     Dictionary<string, VertexLookupInt> _vertices;
 
     Stack<ElementId> _elementStack = new Stack<ElementId>();
@@ -238,7 +250,7 @@ namespace RvtVa3c
 
     string _currentMaterialUid;
 
-    Va3cScene.Va3cObject CurrentObjectPerMaterial
+    Va3cContainer.Va3cObject CurrentObjectPerMaterial
     {
       get
       {
@@ -246,7 +258,7 @@ namespace RvtVa3c
       }
     }
 
-    Va3cScene.Va3cGeometry CurrentGeometryPerMaterial
+    Va3cContainer.Va3cGeometry CurrentGeometryPerMaterial
     {
       get
       {
@@ -280,10 +292,10 @@ namespace RvtVa3c
         Material material = _doc.GetElement(
           uidMaterial ) as Material;
 
-        Va3cScene.Va3cMaterial m
-          = new Va3cScene.Va3cMaterial();
+        Va3cContainer.Va3cMaterial m
+          = new Va3cContainer.Va3cMaterial();
 
-        //m.metadata = new Va3cScene.Va3cMaterialMetadata();
+        //m.metadata = new Va3cContainer.Va3cMaterialMetadata();
         //m.metadata.type = "material";
         //m.metadata.version = 4.2;
         //m.metadata.generator = "RvtVa3c 2015.0.0.0";
@@ -309,7 +321,7 @@ namespace RvtVa3c
       {
         Debug.Assert( !_currentGeometry.ContainsKey( uidMaterial ), "expected same keys in both" );
 
-        _currentObject.Add( uidMaterial, new Va3cScene.Va3cObject() );
+        _currentObject.Add( uidMaterial, new Va3cContainer.Va3cObject() );
         CurrentObjectPerMaterial.name = _currentElement.name;
         CurrentObjectPerMaterial.geometry = uid_per_material;
         CurrentObjectPerMaterial.material = _currentMaterialUid;
@@ -320,10 +332,10 @@ namespace RvtVa3c
 
       if( !_currentGeometry.ContainsKey( uidMaterial ) )
       {
-        _currentGeometry.Add( uidMaterial, new Va3cScene.Va3cGeometry() );
+        _currentGeometry.Add( uidMaterial, new Va3cContainer.Va3cGeometry() );
         CurrentGeometryPerMaterial.uuid = uid_per_material;
         CurrentGeometryPerMaterial.type = "Geometry";
-        CurrentGeometryPerMaterial.data = new Va3cScene.Va3cGeometryData();
+        CurrentGeometryPerMaterial.data = new Va3cContainer.Va3cGeometryData();
         CurrentGeometryPerMaterial.data.faces = new List<int>();
         CurrentGeometryPerMaterial.data.vertices = new List<double>();
         CurrentGeometryPerMaterial.data.normals = new List<double>();
@@ -349,30 +361,32 @@ namespace RvtVa3c
 
     public bool Start()
     {
-      //_faces = new List<FaceMaterial>();
-      _materials = new Dictionary<string, Va3cScene.Va3cMaterial>();
-      //_vertices = new VertexLookupInt();
-      _geometries = new Dictionary<string, Va3cScene.Va3cGeometry>();
-      _objects = new Dictionary<string, Va3cScene.Va3cObject>();
+      _materials = new Dictionary<string, Va3cContainer.Va3cMaterial>();
+      _geometries = new Dictionary<string, Va3cContainer.Va3cGeometry>();
+      _objects = new Dictionary<string, Va3cContainer.Va3cObject>();
 
       _transformationStack.Push( Transform.Identity );
 
-      _scene = new Va3cScene();
-      //_scene = new ExpandoObject();
+      _container = new Va3cContainer();
 
-      _scene.metadata = new Va3cScene.SceneMetadata();
-      _scene.metadata.type = "Object";
-      //_scene.metadata.colors = 0;
-      //_scene.metadata.faces = 0;
-      _scene.metadata.version = 4.3;
-      _scene.metadata.generator = "RvtVa3c Revit vA3C exporter";
-      //_scene.metadata.materials = 0;
-      _scene.geometries = new List<Va3cScene.Va3cGeometry>();
+      _container.metadata = new Va3cContainer.Metadata();
+      _container.metadata.type = "Object";
+      _container.metadata.version = 4.3;
+      _container.metadata.generator = "RvtVa3c Revit vA3C exporter";
+      _container.geometries = new List<Va3cContainer.Va3cGeometry>();
 
-      _scene.obj = new Va3cScene.Va3cObject();
-      _scene.obj.uuid = _doc.ActiveView.UniqueId;
-      _scene.obj.type = "Scene";
-      _scene.obj.matrix = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+      _container.obj = new Va3cContainer.Va3cObject();
+      _container.obj.uuid = _doc.ActiveView.UniqueId;
+      _container.obj.name = "BIM " + _doc.Title;
+      _container.obj.type = "Object3D";
+
+      // Scale entire BIM from millimetres to metres.
+
+      _container.obj.matrix = new double[] { 
+        _scale_bim, 0, 0, 0, 
+        0, _scale_bim, 0, 0, 
+        0, 0, _scale_bim, 0, 
+        0, 0, 0, _scale_bim };
 
       return true;
     }
@@ -381,11 +395,11 @@ namespace RvtVa3c
     {
       // Finish populating scene
 
-      _scene.materials = _materials.Values.ToList();
+      _container.materials = _materials.Values.ToList();
 
-      _scene.geometries = _geometries.Values.ToList();
+      _container.geometries = _geometries.Values.ToList();
 
-      _scene.obj.children = _objects.Values.ToList();
+      _container.obj.children = _objects.Values.ToList();
 
       // Serialise scene
 
@@ -394,8 +408,8 @@ namespace RvtVa3c
       //{
       //  DataContractJsonSerializer serialiser
       //    = new DataContractJsonSerializer(
-      //      typeof( Va3cScene ) );
-      //  serialiser.WriteObject( stream, _scene );
+      //      typeof( Va3cContainer ) );
+      //  serialiser.WriteObject( stream, _container );
       //}
 
       JsonSerializerSettings settings
@@ -405,7 +419,7 @@ namespace RvtVa3c
         = NullValueHandling.Ignore;
 
       File.WriteAllText( _filename,
-        JsonConvert.SerializeObject( _scene,
+        JsonConvert.SerializeObject( _container,
           Formatting.Indented, settings ) );
 
 #if USE_DYNAMIC_JSON
@@ -563,8 +577,8 @@ namespace RvtVa3c
 
         if( !_materials.ContainsKey( uid ) )
         {
-          Va3cScene.Va3cMaterial m
-            = new Va3cScene.Va3cMaterial();
+          Va3cContainer.Va3cMaterial m
+            = new Va3cContainer.Va3cMaterial();
 
           m.uuid = uid;
           m.type = "MeshPhongMaterial";
@@ -655,7 +669,7 @@ namespace RvtVa3c
       // multiple current child objects each with a 
       // separate current geometry.
 
-      _currentElement = new Va3cScene.Va3cObject();
+      _currentElement = new Va3cContainer.Va3cObject();
 
       _currentElement.name = Util.ElementDescription( e );
       _currentElement.material = _currentMaterialUid;
@@ -663,8 +677,8 @@ namespace RvtVa3c
       _currentElement.type = "RevitElement";
       _currentElement.uuid = uid;
 
-      _currentObject = new Dictionary<string, Va3cScene.Va3cObject>();
-      _currentGeometry = new Dictionary<string, Va3cScene.Va3cGeometry>();
+      _currentObject = new Dictionary<string, Va3cContainer.Va3cObject>();
+      _currentGeometry = new Dictionary<string, Va3cContainer.Va3cGeometry>();
       _vertices = new Dictionary<string, VertexLookupInt>();
 
       if( null != e.Category
@@ -699,18 +713,18 @@ namespace RvtVa3c
 
       int n = materials.Count;
 
-      _currentElement.children = new List<Va3cScene.Va3cObject>( n );
+      _currentElement.children = new List<Va3cContainer.Va3cObject>( n );
 
       foreach( string material in materials )
       {
-        Va3cScene.Va3cObject obj = _currentObject[material];
-        Va3cScene.Va3cGeometry geo = _currentGeometry[material];
+        Va3cContainer.Va3cObject obj = _currentObject[material];
+        Va3cContainer.Va3cGeometry geo = _currentGeometry[material];
 
         foreach( KeyValuePair<PointInt, int> p in _vertices[material] )
         {
-          geo.data.vertices.Add( _scale * p.Key.X );
-          geo.data.vertices.Add( _scale * p.Key.Y );
-          geo.data.vertices.Add( _scale * p.Key.Z );
+          geo.data.vertices.Add( _scale_vertex * p.Key.X );
+          geo.data.vertices.Add( _scale_vertex * p.Key.Y );
+          geo.data.vertices.Add( _scale_vertex * p.Key.Z );
         }
         obj.geometry = geo.uuid;
         _geometries.Add( geo.uuid, geo );
