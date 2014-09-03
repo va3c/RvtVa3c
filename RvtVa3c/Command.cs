@@ -107,7 +107,8 @@ namespace RvtVa3c
 
       if( rc )
       {
-        filename = Path.GetFileName( dlg.FileName );
+        filename = Path.Combine( dlg.InitialDirectory, 
+          dlg.FileName );
 
         folder_path = Path.GetDirectoryName( 
           filename );

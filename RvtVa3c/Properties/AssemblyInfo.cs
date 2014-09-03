@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
 //
 // History:
 // 2014-09-02 2015.0.0.19 minor cleanup before removing scene definition
+// 2014-09-03 2015.0.0.20 fixed bug in SelectFile, need to determine full output path
 //
-[assembly: AssemblyVersion( "2015.0.0.19" )]
-[assembly: AssemblyFileVersion( "2015.0.0.19" )]
+[assembly: AssemblyVersion( "2015.0.0.20" )]
+[assembly: AssemblyFileVersion( "2015.0.0.20" )]
