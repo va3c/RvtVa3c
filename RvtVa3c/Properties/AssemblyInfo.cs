@@ -39,5 +39,5 @@ using System.Runtime.InteropServices;
 // 2014-09-03 2015.0.0.21 replace top level json container Scene for Object3D
 // 2014-09-04 2015.0.0.23 added new models, theo confirmed it works, and added name property to materials
 //
-[assembly: AssemblyVersion( "2015.0.0.23" )]
-[assembly: AssemblyFileVersion( "2015.0.0.23" )]
+[assembly: AssemblyVersion( "2015.0.0.25" )]
+[assembly: AssemblyFileVersion( "2015.0.0.25" )]
