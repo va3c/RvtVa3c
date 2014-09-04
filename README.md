@@ -1,7 +1,7 @@
 RvtVa3c
 =======
 
-A Revit custom exporter add-in generating JSON output for the *vA3C* three.js AEC viewer.
+A Revit custom exporter add-in generating JSON output for the **vA3C** three.js AEC viewer.
 
 Implemented by Matt Mason and Jeremy Tammik at the New York AEC Hackathon in May 2014.
 
