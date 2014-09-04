@@ -23,6 +23,8 @@ namespace RvtVa3c
       [DataMember]
       public string uuid { get; set; }
       [DataMember]
+      public string name { get; set; }
+      [DataMember]
       public string type { get; set; } // MeshPhongMaterial
       [DataMember]
       public int color { get; set; } // 16777215
@@ -143,14 +145,6 @@ namespace RvtVa3c
       public double version { get; set; } // 4.3
       [DataMember]
       public string generator { get; set; } //  "RvtVa3c Revit vA3C exporter"
-
-      //[DataMember] public int vertices { get; set; } //  770
-      //[DataMember] public int faces { get; set; } //  768
-      //[DataMember] public int normals { get; set; } //  770
-      //[DataMember] public int colors { get; set; } //  0
-      //[DataMember] public int uvs { get; set; } //  0
-      //[DataMember] public int materials { get; set; } //  1
-      //[DataMember] public int morphTargets { get; set; } //  0
     }
 
     [DataMember]

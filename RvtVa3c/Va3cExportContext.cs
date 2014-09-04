@@ -301,6 +301,7 @@ namespace RvtVa3c
         //m.metadata.generator = "RvtVa3c 2015.0.0.0";
 
         m.uuid = uidMaterial;
+        m.name = material.Name;
         m.type = "MeshPhongMaterial";
         m.color = Util.ColorToInt( material.Color );
         m.ambient = m.color;
