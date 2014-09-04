@@ -13,8 +13,8 @@ Tools and Technologies
 * [vA3C three.js AEC Viewer](http://va3c.github.io)
 
 
-Further Reading on the RvtVa3c – vA3C Exporter
------------------------------------------------
+Further Reading
+---------------
 
 * [AEC Hackathon – From the Midst of the Fray](http://thebuildingcoder.typepad.com/blog/2014/05/aec-hackathon-from-the-midst-of-the-fray.html)
 * [RvtVa3c – Revit Va3c Generic AEC Viewer JSON Export](http://thebuildingcoder.typepad.com/blog/2014/05/rvtva3c-revit-va3c-generic-aec-viewer-json-export.html)
