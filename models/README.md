@@ -13,7 +13,7 @@ The following three are very simple test cases:
 
 - wall_2015.rvt.js -- just a wall
 - wall_brick.rvt.js -- just a brick wall, added material
-- little_house.rvt.js -- a very miniaml house: four walls, a floor, a roof, a door and two windows
+- little_house.rvt.js -- a very minimal house: four walls, a floor, a roof, a door and two windows
 
 The following six are the standard sample models included in a basic Revit installation:
 
