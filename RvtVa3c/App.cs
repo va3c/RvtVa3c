@@ -13,7 +13,7 @@ namespace RvtVa3c
   class App : IExternalApplication
   {
     /// <summary>
-    /// Add buttons for our three commands 
+    /// Add buttons for our command
     /// to the ribbon panel.
     /// </summary>
     void PopulatePanel( RibbonPanel p )
