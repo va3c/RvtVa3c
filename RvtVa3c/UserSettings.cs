@@ -12,7 +12,7 @@ namespace RvtVa3c
 
     const string _error_msg_format
       = "Invalid settings in '{0}'; "
-      + "please add '{1}' = true or false";
+      + "please add '{1}' = {2} or {3}";
 
     public static bool JsonIndented
     {
@@ -39,8 +39,9 @@ namespace RvtVa3c
 
         if( 0 > i )
         {
-          Util.ErrorMsg( string.Format( 
-            _error_msg_format, path, _JsonIndent ) );
+          Util.ErrorMsg( string.Format(
+            _error_msg_format, path, _JsonIndent, 
+            Boolean.TrueString, Boolean.FalseString ) );
 
           return false;
         }
@@ -52,7 +53,8 @@ namespace RvtVa3c
         if( 0 > i )
         {
           Util.ErrorMsg( string.Format(
-            _error_msg_format, path, _JsonIndent ) );
+            _error_msg_format, path, _JsonIndent,
+            Boolean.TrueString, Boolean.FalseString ) );
 
           return false;
         }
