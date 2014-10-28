@@ -419,9 +419,14 @@ namespace RvtVa3c
       settings.NullValueHandling
         = NullValueHandling.Ignore;
 
+      Formatting formatting 
+        = UserSettings.JsonIndented
+          ? Formatting.Indented
+          : Formatting.None;
+
       File.WriteAllText( _filename,
-        JsonConvert.SerializeObject( _container,
-          Formatting.Indented, settings ) );
+        JsonConvert.SerializeObject( 
+          _container, formatting, settings ) );
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 

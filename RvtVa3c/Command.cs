@@ -156,8 +156,8 @@ namespace RvtVa3c
       }
       else
       {
-        TaskDialog.Show( "vA3C",
-          "You must be in 3D view to export." );
+        Util.ErrorMsg( 
+          "You must be in a 3D view to export." );
       }
       return Result.Failed;
     }
