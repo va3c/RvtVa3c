@@ -1,11 +1,27 @@
-﻿using Autodesk.Revit.DB;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Autodesk.Revit.DB;
+using WinForms = System.Windows.Forms;
 
 namespace RvtVa3c
 {
   class Util
   {
+    const string _caption = "vA3C";
+
+    /// <summary>
+    /// Display an error message to the user.
+    /// </summary>
+    public static void ErrorMsg( string msg )
+    {
+      Debug.WriteLine( msg );
+      WinForms.MessageBox.Show( msg,
+        _caption,
+        WinForms.MessageBoxButtons.OK,
+        WinForms.MessageBoxIcon.Error );
+    }
+
     /// <summary>
     /// Return a string for a real number
     /// formatted to two decimal places.
@@ -36,6 +52,45 @@ namespace RvtVa3c
       return ( (int) color.Red ) << 16
         | ( (int) color.Green ) << 8
         | (int) color.Blue;
+    }
+
+    /// <summary>
+    /// Extract a true or false value from the given
+    /// string, accepting yes/no, Y/N, true/false, T/F
+    /// and 1/0. Default to false if no valid value is
+    /// given.
+    /// </summary>
+    public static bool GetTrueOrFalse( string s )
+    {
+      if( s.Equals( Boolean.TrueString,
+        StringComparison.OrdinalIgnoreCase ) )
+      {
+        return true;
+      }
+      if( s.Equals( Boolean.FalseString,
+        StringComparison.OrdinalIgnoreCase ) )
+      {
+        return false;
+      }
+      if( s.Equals( "1" ) )
+      {
+        return true;
+      }
+      if( s.Equals( "0" ) )
+      {
+        return false;
+      }
+      s = s.ToLower();
+
+      if( 't' == s[0] || 'y' == s[0] )
+      {
+        return true;
+      }
+      if( 'f' == s[0] || 'n' == s[0] )
+      {
+        return false;
+      }
+      return false;
     }
 
     /// <summary>
