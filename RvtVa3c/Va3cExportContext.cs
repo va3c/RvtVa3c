@@ -419,13 +419,13 @@ namespace RvtVa3c
       settings.NullValueHandling
         = NullValueHandling.Ignore;
 
-      Formatting formatting 
+      Formatting formatting
         = UserSettings.JsonIndented
           ? Formatting.Indented
           : Formatting.None;
 
       File.WriteAllText( _filename,
-        JsonConvert.SerializeObject( 
+        JsonConvert.SerializeObject(
           _container, formatting, settings ) );
 
 #if USE_DYNAMIC_JSON

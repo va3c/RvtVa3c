@@ -11,8 +11,17 @@ namespace RvtVa3c
     const string _JsonIndent = "JsonIndent";
 
     const string _error_msg_format
-      = "Invalid settings in '{0}'; "
-      + "please add '{1}' = {2} or {3}";
+      = "Invalid settings in '{0}':\r\n\r\n{1}"
+      + "\r\n\r\nPlease add {2} = {3} or {4}.";
+
+    static bool SyntaxError( string path, string s )
+    {
+      Util.ErrorMsg( string.Format(
+        _error_msg_format, path, s, _JsonIndent,
+        Boolean.TrueString, Boolean.FalseString ) );
+
+      return false;
+    }
 
     public static bool JsonIndented
     {
@@ -33,35 +42,35 @@ namespace RvtVa3c
             path ) );
         }
 
-        string s = File.ReadAllText( path );
+        string s1 = File.ReadAllText( path );
 
-        int i = s.IndexOf( _JsonIndent );
+        int i = s1.IndexOf( _JsonIndent );
 
         if( 0 > i )
         {
-          Util.ErrorMsg( string.Format(
-            _error_msg_format, path, _JsonIndent, 
-            Boolean.TrueString, Boolean.FalseString ) );
-
-          return false;
+          return SyntaxError( path, s1 );
         }
 
-        s = s.Substring( i + _JsonIndent.Length );
+        string s = s1.Substring( i
+          + _JsonIndent.Length );
 
         i = s.IndexOf( '=' );
 
         if( 0 > i )
         {
-          Util.ErrorMsg( string.Format(
-            _error_msg_format, path, _JsonIndent,
-            Boolean.TrueString, Boolean.FalseString ) );
-
-          return false;
+          return SyntaxError( path, s1 );
         }
 
         s = s.Substring( i + 1 ).Trim();
 
-        return Util.GetTrueOrFalse( s );
+        bool rc;
+
+        if( !Util.GetTrueOrFalse( s, out rc ) )
+        {
+          return SyntaxError( path, s1 );
+        }
+
+        return rc;
       }
     }
   }
