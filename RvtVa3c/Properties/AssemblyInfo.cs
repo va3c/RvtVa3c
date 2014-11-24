@@ -40,7 +40,8 @@ using System.Runtime.InteropServices;
 // 2014-09-04 2015.0.0.23 added new models, theo confirmed it works, added name property to materials
 // 2014-09-22 2015.0.0.24 added all six standard revit sample models
 // 2014-10-28 2015.0.0.25 added support for runtime reading of user settings and switch between indented JSON or not to optionally reduce file size
-// 2014-11-24 2015.0.0.26 skip elements with null category
+// 2014-10-29 2015.0.0.26 user setting enhancements
+// 2014-11-24 2015.0.0.27 skip elements with null category
 //
-[assembly: AssemblyVersion( "2015.0.0.26" )]
-[assembly: AssemblyFileVersion( "2015.0.0.26" )]
+[assembly: AssemblyVersion( "2015.0.0.27" )]
+[assembly: AssemblyFileVersion( "2015.0.0.27" )]
