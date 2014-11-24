@@ -44,6 +44,11 @@ namespace RvtVa3c
 
         string s1 = File.ReadAllText( path );
 
+        // Todo: convert the following lines to a 
+        // stand-alone helper method GetVariableValue( 
+        // s, _JsonIndent, out bool rslt ), cf.
+        // Z:\a\src\web\viewer\philippe\AdnGallery\add-ins\Autodesk.ADN.AddIns\Autodesk.ADN.RvtGalleryUploader\Util.cs
+
         int i = s1.IndexOf( _JsonIndent );
 
         if( 0 > i )

@@ -616,19 +616,24 @@ namespace RvtVa3c
     {
       Debug.WriteLine( "OnDaylightPortal: " + node.NodeName );
       Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnDaylightPortal: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+      Debug.WriteLine( "OnDaylightPortal: Asset:"
+        + ( ( asset != null ) ? asset.Name : "Null" ) );
     }
 
     public void OnRPC( RPCNode node )
     {
       Debug.WriteLine( "OnRPC: " + node.NodeName );
       Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnRPC: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+      Debug.WriteLine( "OnRPC: Asset:"
+        + ( ( asset != null ) ? asset.Name : "Null" ) );
     }
 
     public RenderNodeAction OnViewBegin( ViewNode node )
     {
-      Debug.WriteLine( "OnViewBegin: " + node.NodeName + "(" + node.ViewId.IntegerValue + "): LOD: " + node.LevelOfDetail );
+      Debug.WriteLine( "OnViewBegin: "
+        + node.NodeName + "(" + node.ViewId.IntegerValue
+        + "): LOD: " + node.LevelOfDetail );
+
       return RenderNodeAction.Proceed;
     }
 
@@ -651,6 +656,12 @@ namespace RvtVa3c
       if( _objects.ContainsKey( uid ) )
       {
         Debug.WriteLine( "\r\n*** Duplicate element!\r\n" );
+        return RenderNodeAction.Skip;
+      }
+
+      if( null == e.Category )
+      {
+        Debug.WriteLine( "\r\n*** Non-category element!\r\n" );
         return RenderNodeAction.Skip;
       }
 
