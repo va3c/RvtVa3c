@@ -726,6 +726,12 @@ namespace RvtVa3c
         return;
       }
 
+      if( null == e.Category )
+      {
+        Debug.WriteLine( "\r\n*** Non-category element!\r\n" );
+        return;
+      }
+
       List<string> materials = _vertices.Keys.ToList();
 
       int n = materials.Count;
