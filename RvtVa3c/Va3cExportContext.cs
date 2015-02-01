@@ -25,7 +25,7 @@ namespace RvtVa3c
   // Check for file size
   // Instance/type reuse
 
-  class Va3cExportContext : IExportContext
+  public class Va3cExportContext : IExportContext
   {
     /// <summary>
     /// Scale entire top level BIM object nove in JSON
@@ -250,6 +250,8 @@ namespace RvtVa3c
 
     string _currentMaterialUid;
 
+    public string myjs = null;
+
     Va3cContainer.Va3cObject CurrentObjectPerMaterial
     {
       get
@@ -282,6 +284,10 @@ namespace RvtVa3c
       }
     }
 
+    public override string ToString()
+    {
+        return myjs;
+    }
     /// <summary>
     /// Set the current material
     /// </summary>
@@ -392,7 +398,7 @@ namespace RvtVa3c
       return true;
     }
 
-    public void Finish()
+    public  void Finish()
     {
       // Finish populating scene
 
@@ -424,9 +430,11 @@ namespace RvtVa3c
           ? Formatting.Indented
           : Formatting.None;
 
-      File.WriteAllText( _filename,
-        JsonConvert.SerializeObject(
-          _container, formatting, settings ) );
+        myjs = JsonConvert.SerializeObject(
+          _container, formatting, settings );
+
+        
+      //File.WriteAllText( _filename, myjs);
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
