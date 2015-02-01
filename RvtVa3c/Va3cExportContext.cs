@@ -767,6 +767,9 @@ namespace RvtVa3c
 
       _currentElement.userData = d;
 
+        //also add guid to user data dict
+      _currentElement.userData.Add("revit_id", uid);
+
       _objects.Add( _currentElement.uuid, _currentElement );
 
       _elementStack.Pop();
