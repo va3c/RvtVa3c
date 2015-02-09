@@ -34,7 +34,7 @@ namespace RvtVa3c
     /// so that a typical model has a chance of fitting 
     /// into a cube with side length 100, i.e. 10 metres.
     /// </summary>
-    double _scale_bim = 0.01;
+    double _scale_bim = 1.0;
 
     /// <summary>
     /// Scale applied to each vertex in each individual 
@@ -313,7 +313,7 @@ namespace RvtVa3c
         m.ambient = m.color;
         m.emissive = 0;
         m.specular = m.color;
-        m.shininess = material.Shininess; // todo: does this need scaling to e.g. [0,100]?
+        m.shininess = 1; // todo: does this need scaling to e.g. [0,100]?
         m.opacity = 0.01 * (double) ( 100 - material.Transparency ); // Revit has material.Transparency in [0,100], three.js expects opacity in [0.0,1.0]
         m.transparent = 0 < material.Transparency;
         m.wireframe = false;
@@ -385,7 +385,7 @@ namespace RvtVa3c
       _container.obj = new Va3cContainer.Va3cObject();
       _container.obj.uuid = _doc.ActiveView.UniqueId;
       _container.obj.name = "BIM " + _doc.Title;
-      _container.obj.type = "Object3D";
+      _container.obj.type = "Scene";
 
       // Scale entire BIM from millimetres to metres.
 
@@ -434,7 +434,7 @@ namespace RvtVa3c
           _container, formatting, settings );
 
         
-      //File.WriteAllText( _filename, myjs);
+      File.WriteAllText( _filename, myjs);
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
