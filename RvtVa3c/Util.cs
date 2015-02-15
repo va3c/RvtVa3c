@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region Namespaces
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Autodesk.Revit.DB;
 using WinForms = System.Windows.Forms;
+#endregion // Namespaces
 
 namespace RvtVa3c
 {
