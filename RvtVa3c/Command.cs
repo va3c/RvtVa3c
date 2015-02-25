@@ -94,13 +94,29 @@ namespace RvtVa3c
         {
             _parameterDictionary = new Dictionary<string, List<string>>();
             _toExportDictionary = new Dictionary<string, List<string>>();
+
+
+            ElementClassFilter familyInstanceFilter = new ElementClassFilter(typeof(FamilyInstance));
+            ElementClassFilter wallFilter = new ElementClassFilter(typeof(Wall));
+            ElementClassFilter floorFilter = new ElementClassFilter(typeof(Floor));
+
+            List<ElementFilter> filters = new List <ElementFilter>(); ;
+            filters.Add((ElementFilter)familyInstanceFilter);
+            filters.Add((ElementFilter)wallFilter);
+            filters.Add((ElementFilter)floorFilter);
+
             //get all the family instances in the document
+            //FilteredElementCollector collector
+            //    = new FilteredElementCollector(doc).
+            //    OfClass(typeof(FamilyInstance));
+
+            LogicalOrFilter elementFilter = new LogicalOrFilter(filters);
+
             FilteredElementCollector collector
-                = new FilteredElementCollector(doc).
-                OfClass(typeof(FamilyInstance));
+                = new FilteredElementCollector(doc).WherePasses(elementFilter);
 
             // create a dictionary with all the properties for each object
-            foreach (FamilyInstance fi in collector)
+            foreach (var fi in collector)
             {
                 string category = fi.Category.Name;
                 // skip these categories, do not show them in the form
@@ -111,7 +127,6 @@ namespace RvtVa3c
 
                     foreach (Parameter p in parameters)
                     {
-
                         string pName = p.Definition.Name;
                         string tempVal = "";
 
@@ -141,6 +156,41 @@ namespace RvtVa3c
                     if (parameterNames.Count > 0)
                     {
                         _parameterDictionary.Add(category, parameterNames);
+                    }
+
+
+                    ElementId idType = fi.GetTypeId();
+
+                    if (ElementId.InvalidElementId != idType)
+                    {
+                        Element typ = doc.GetElement(idType);
+                        parameters = typ.GetOrderedParameters();
+                        List<string> parameterTypes = new List<string>();
+                        foreach (Parameter p in parameters)
+                        {
+                            string pName = "Type " + p.Definition.Name;
+                            string tempVal = "";
+                            if (!_parameterDictionary.ContainsKey(pName))
+                            {
+                                if (StorageType.String == p.StorageType)
+                                {
+                                    tempVal = p.AsString();
+                                }
+                                else
+                                {
+                                    tempVal = p.AsValueString();
+                                }
+
+                                if (!string.IsNullOrEmpty(tempVal))
+                                {
+                                    parameterTypes.Add(tempVal);
+                                }
+                            }
+                        }
+                        if (parameterTypes.Count > 0)
+                        {
+                            _parameterDictionary[category].AddRange(parameterTypes);
+                        }
                     }
                 }
             }
@@ -277,6 +327,7 @@ namespace RvtVa3c
                     _filterParameters = true;
                     if (ParameterFilter.status == "cancelled") return Result.Cancelled;
                 }
+                else { _filterParameters = false; }
 
                 string filename = doc.PathName;
                 if (0 == filename.Length)

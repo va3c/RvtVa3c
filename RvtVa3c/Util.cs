@@ -294,38 +294,38 @@ namespace RvtVa3c
                 }
             }
 
-            //if (includeType)
-            //{
-            //    ElementId idType = e.GetTypeId();
+            if (includeType)
+            {
+                ElementId idType = e.GetTypeId();
 
-            //    if (ElementId.InvalidElementId != idType)
-            //    {
-            //        Document doc = e.Document;
-            //        Element typ = doc.GetElement(idType);
-            //        parameters = typ.GetOrderedParameters();
-            //        foreach (Parameter p in parameters)
-            //        {
-            //            key = "Type " + p.Definition.Name;
+                if (ElementId.InvalidElementId != idType)
+                {
+                    Document doc = e.Document;
+                    Element typ = doc.GetElement(idType);
+                    parameters = typ.GetOrderedParameters();
+                    foreach (Parameter p in parameters)
+                    {
+                        key = "Type " + p.Definition.Name;
 
-            //            if (!a.ContainsKey(key))
-            //            {
-            //                if (StorageType.String == p.StorageType)
-            //                {
-            //                    val = p.AsString();
-            //                }
-            //                else
-            //                {
-            //                    val = p.AsValueString();
-            //                }
+                        if (!a.ContainsKey(key))
+                        {
+                            if (StorageType.String == p.StorageType)
+                            {
+                                val = p.AsString();
+                            }
+                            else
+                            {
+                                val = p.AsValueString();
+                            }
 
-            //                if (!string.IsNullOrEmpty(val))
-            //                {
-            //                    a.Add(key, val);
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                            if (!string.IsNullOrEmpty(val))
+                            {
+                                a.Add(key, val);
+                            }
+                        }
+                    }
+                }
+            }
             return a;
         }
     }

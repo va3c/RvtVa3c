@@ -37,7 +37,7 @@
             // 
             this.checkUncheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkUncheck.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkUncheck.Location = new System.Drawing.Point(12, 228);
+            this.checkUncheck.Location = new System.Drawing.Point(12, 227);
             this.checkUncheck.Name = "checkUncheck";
             this.checkUncheck.Size = new System.Drawing.Size(184, 33);
             this.checkUncheck.TabIndex = 4;
@@ -49,7 +49,7 @@
             // 
             this.export_button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.export_button.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.export_button.Location = new System.Drawing.Point(210, 228);
+            this.export_button.Location = new System.Drawing.Point(210, 227);
             this.export_button.Name = "export_button";
             this.export_button.Size = new System.Drawing.Size(93, 33);
             this.export_button.TabIndex = 5;
@@ -61,7 +61,7 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(320, 228);
+            this.cancelButton.Location = new System.Drawing.Point(320, 227);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(87, 33);
             this.cancelButton.TabIndex = 6;
@@ -74,11 +74,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.ClientSize = new System.Drawing.Size(419, 273);
+            this.ClientSize = new System.Drawing.Size(419, 272);
             this.ControlBox = false;
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.export_button);
             this.Controls.Add(this.checkUncheck);
+            this.MaximumSize = new System.Drawing.Size(900, 310);
+            this.MinimumSize = new System.Drawing.Size(435, 310);
             this.Name = "ParameterFilter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ParameterFilter";

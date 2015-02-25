@@ -19,6 +19,7 @@ namespace RvtVa3c
 
         private bool areAllChecked = true;
         public static string status = "";
+        
         private void checkUncheck_Click(object sender, EventArgs e)
         {
             string thisTab = Command._tabControl.SelectedTab.Name;
