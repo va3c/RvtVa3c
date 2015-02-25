@@ -84,10 +84,12 @@ namespace RvtVa3c
 
 
 
-        public static ParameterFilter filter;
-        public static TabControl tabControl;
+        public static ParameterFilter _filter;
+        public static bool _filterParameters = false;
+        public static TabControl _tabControl;
         public static Dictionary<string, List<string>> _parameterDictionary;
         public static Dictionary<string, List<string>> _toExportDictionary;
+
         public void filterElementParameters(Document doc)
         {
             _parameterDictionary = new Dictionary<string, List<string>>();
@@ -101,93 +103,95 @@ namespace RvtVa3c
             foreach (FamilyInstance fi in collector)
             {
                 string category = fi.Category.Name;
-
-                IList<Parameter> parameters = fi.GetOrderedParameters();
-                List<string> parameterNames = new List<string>();
-
-                foreach (Parameter p in parameters)
+                // skip these categories, do not show them in the form
+                if (category != "Title Blocks" && category != "Generic Annotations" && category != "Detail Items")
                 {
+                    IList<Parameter> parameters = fi.GetOrderedParameters();
+                    List<string> parameterNames = new List<string>();
 
-                    string pName = p.Definition.Name;
-                    string tempVal = "";
-
-                    if (StorageType.String == p.StorageType)
-                    {
-                        tempVal = p.AsString();
-                    }
-                    else
-                    {
-                        tempVal = p.AsValueString();
-                    }
-                    if (!string.IsNullOrEmpty(tempVal))
+                    foreach (Parameter p in parameters)
                     {
 
-                        if (_parameterDictionary.ContainsKey(category))
+                        string pName = p.Definition.Name;
+                        string tempVal = "";
+
+                        if (StorageType.String == p.StorageType)
                         {
-                            if (!_parameterDictionary[category].Contains(pName))
-                            {
-                                _parameterDictionary[category].Add(pName);
-                            }
+                            tempVal = p.AsString();
                         }
                         else
                         {
-                            parameterNames.Add(pName);
+                            tempVal = p.AsValueString();
+                        }
+                        if (!string.IsNullOrEmpty(tempVal))
+                        {
+                            if (_parameterDictionary.ContainsKey(category))
+                            {
+                                if (!_parameterDictionary[category].Contains(pName))
+                                {
+                                    _parameterDictionary[category].Add(pName);
+                                }
+                            }
+                            else
+                            {
+                                parameterNames.Add(pName);
+                            }
                         }
                     }
-                }
-                if (parameterNames.Count > 0)
-                {
-                    _parameterDictionary.Add(category, parameterNames);
-
+                    if (parameterNames.Count > 0)
+                    {
+                        _parameterDictionary.Add(category, parameterNames);
+                    }
                 }
             }
 
             //CREATE FILTER UI
-            filter = new ParameterFilter();
-             tabControl = new TabControl();
-            tabControl.Size = new System.Drawing.Size(420, 220);
+            _filter = new ParameterFilter();
+
+            _tabControl = new TabControl();
+            _tabControl.Size = new System.Drawing.Size(420, 220);
             foreach (string c in _parameterDictionary.Keys)
             {
-                
-
-                CheckedListBox columnCheckList = new CheckedListBox();
-
-                columnCheckList.Size = new System.Drawing.Size(400, 200);
-                columnCheckList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                //Create a checklist
+                CheckedListBox checkList = new CheckedListBox();
+                //set the properties of the checklist
+                checkList.Size = new System.Drawing.Size(400, 200);
+                checkList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                 | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
-                columnCheckList.MultiColumn = true;
-                columnCheckList.ColumnWidth = 200;
-                columnCheckList.CheckOnClick = true;
-                columnCheckList.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                columnCheckList.HorizontalScrollbar = false;
+                checkList.MultiColumn = true;
+                checkList.ColumnWidth = 200;
+                checkList.CheckOnClick = true;
+                checkList.BorderStyle = System.Windows.Forms.BorderStyle.None;
+                checkList.HorizontalScrollbar = false;
 
+                checkList.Items.AddRange(_parameterDictionary[c].ToArray());
 
-                columnCheckList.Items.AddRange(_parameterDictionary[c].ToArray());
-
-                for (int i = 0; i <= (columnCheckList.Items.Count - 1); i++)
+                for (int i = 0; i <= (checkList.Items.Count - 1); i++)
                 {
-                    columnCheckList.SetItemCheckState(i, CheckState.Checked);
+                    checkList.SetItemCheckState(i, CheckState.Checked);
                 }
 
+                //add A tab
                 TabPage tab = new TabPage(c);
-
                 tab.Name = c;
-                tab.Controls.Add(columnCheckList);
 
-                //filter.Controls.Add(_columnCheckList);
-                tabControl.TabPages.Add(tab);
+                //attach the checklist to the tab
+                tab.Controls.Add(checkList);
 
+                // attach the tab to the tab control
+                _tabControl.TabPages.Add(tab);
             }
-            
-            filter.Controls.Add(tabControl);
+
+            //attach the tab control to the filter form
+            _filter.Controls.Add(_tabControl);
 
 
             //DISPLAY FILTER UI
-            filter.ShowDialog();
+            _filter.ShowDialog();
 
             //loop thru each tab
-            foreach (TabPage tab in tabControl.TabPages)
+            foreach (TabPage tab in _tabControl.TabPages)
             {
                 List<string> parametersToExport = new List<string>();
                 foreach (var checkedP in ((CheckedListBox)tab.Controls[0]).CheckedItems)
@@ -258,10 +262,21 @@ namespace RvtVa3c
 
             if (doc.ActiveView is View3D)
             {
-                
+                TaskDialog td = new TaskDialog("Ask user to filter parameters");
+                td.Title = "Filter parameters";
+                td.CommonButtons = TaskDialogCommonButtons.No | TaskDialogCommonButtons.Yes;
+                td.MainInstruction = "Do you want to filter the parameters to be exported?";
+                td.MainContent = "Click Yes and you will be able to select parameters for each category in the next window";
+                td.AllowCancellation = true;
+                TaskDialogResult tdResult = td.Show();
+
+                if (tdResult == TaskDialogResult.Yes)
+                {
+                   // Call the filter
                     filterElementParameters(doc);
-                
-                
+                    _filterParameters = true;
+                    if (ParameterFilter.status == "cancelled") return Result.Cancelled;
+                }
 
                 string filename = doc.PathName;
                 if (0 == filename.Length)
@@ -281,17 +296,14 @@ namespace RvtVa3c
                     filename = Path.Combine(_output_folder_path,
                       filename);
 
-
-
                     ExportView3D(doc.ActiveView as View3D,
                       filename);
-
-
-
 
                     return Result.Succeeded;
                 }
                 return Result.Cancelled;
+
+
             }
             else
             {

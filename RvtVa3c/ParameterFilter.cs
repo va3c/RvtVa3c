@@ -17,14 +17,14 @@ namespace RvtVa3c
             InitializeComponent();
         }
 
-        private bool areAllChecked=true;
-
+        private bool areAllChecked = true;
+        public static string status = "";
         private void checkUncheck_Click(object sender, EventArgs e)
         {
-            string thisTab=Command.tabControl.SelectedTab.Name;
-            int index = Command.tabControl.SelectedIndex;
+            string thisTab = Command._tabControl.SelectedTab.Name;
+            int index = Command._tabControl.SelectedIndex;
 
-            CheckedListBox currentCheckList = (CheckedListBox)((TabPage)(Command.tabControl.GetControl(index))).Controls[0];
+            CheckedListBox currentCheckList = (CheckedListBox)((TabPage)(Command._tabControl.GetControl(index))).Controls[0];
 
             if (!areAllChecked)
             {
@@ -43,12 +43,22 @@ namespace RvtVa3c
                 areAllChecked = false;
 
             }
-            
+
         }
 
         private void export_button_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            status = "cancelled";
+        }
+
+
+
+
     }
 }

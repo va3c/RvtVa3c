@@ -762,11 +762,15 @@ namespace RvtVa3c
         _currentElement.children.Add( obj );
       }
 
-      //Dictionary<string, string> d
-      //  = Util.GetElementProperties( e, true );
-
-      Dictionary<string, string> d
-      = Util.GetElementFilteredProperties(e, true);
+      Dictionary<string, string> d = new Dictionary<string, string>();
+      if (Command._filterParameters)
+      {
+         d = Util.GetElementFilteredProperties(e, true);
+      }
+      else
+      {
+          d = Util.GetElementProperties(e, true);
+      }
 
       _currentElement.userData = d;
 
