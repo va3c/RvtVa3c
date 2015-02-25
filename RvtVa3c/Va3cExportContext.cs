@@ -7,7 +7,7 @@ using System.IO;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.Utility;
 using Newtonsoft.Json;
-#endregion // Namespaces
+#endregion
 
 namespace RvtVa3c
 {
@@ -762,8 +762,11 @@ namespace RvtVa3c
         _currentElement.children.Add( obj );
       }
 
+      //Dictionary<string, string> d
+      //  = Util.GetElementProperties( e, true );
+
       Dictionary<string, string> d
-        = Util.GetElementProperties( e, true );
+      = Util.GetElementFilteredProperties(e, true);
 
       _currentElement.userData = d;
 
