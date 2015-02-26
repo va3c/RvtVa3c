@@ -83,39 +83,55 @@ namespace RvtVa3c
         }
 
 
-
         public static ParameterFilter _filter;
         public static bool _filterParameters = false;
         public static TabControl _tabControl;
         public static Dictionary<string, List<string>> _parameterDictionary;
         public static Dictionary<string, List<string>> _toExportDictionary;
-
-        public void filterElementParameters(Document doc)
+        public static bool includeT = false;
+        
+        /// <summary>
+        /// Function to filter the parameters of the objects in the scene
+        /// </summary>
+        /// <param name="doc">Revit Document</param>
+        /// <param name="includeType">Include Type Parameters in the filter dialog</param>
+        public void filterElementParameters(Document doc, bool includeType)
         {
             _parameterDictionary = new Dictionary<string, List<string>>();
             _toExportDictionary = new Dictionary<string, List<string>>();
 
-
+            //GET THE PARAMETERS OF THE OBJECTS
+            //Filters for the objects we want to get parameters of
             ElementClassFilter familyInstanceFilter = new ElementClassFilter(typeof(FamilyInstance));
             ElementClassFilter wallFilter = new ElementClassFilter(typeof(Wall));
             ElementClassFilter floorFilter = new ElementClassFilter(typeof(Floor));
+            ElementCategoryFilter analyticalWallFilter = new ElementCategoryFilter(BuiltInCategory.OST_WallAnalytical);
+            ElementCategoryFilter analyticalFloorFilter = new ElementCategoryFilter(BuiltInCategory.OST_FloorAnalytical);
+
+            
+            ElementCategoryFilter roofFilter = new ElementCategoryFilter(BuiltInCategory.OST_Roofs);
+            ElementCategoryFilter topographyFilter = new ElementCategoryFilter(BuiltInCategory.OST_Topography);
 
             List<ElementFilter> filters = new List <ElementFilter>(); ;
             filters.Add((ElementFilter)familyInstanceFilter);
             filters.Add((ElementFilter)wallFilter);
             filters.Add((ElementFilter)floorFilter);
+            filters.Add((ElementFilter)roofFilter);
+            filters.Add((ElementFilter)topographyFilter);
 
-            //get all the family instances in the document
-            //FilteredElementCollector collector
-            //    = new FilteredElementCollector(doc).
-            //    OfClass(typeof(FamilyInstance));
+            //get the analytical objects that can be displayed in the web viewer if the analytical model is ON
+            if (!doc.ActiveView.AreAnalyticalModelCategoriesHidden)
+            {
+                filters.Add((ElementFilter)analyticalWallFilter);
+                filters.Add((ElementFilter)analyticalFloorFilter);
+            }
 
             LogicalOrFilter elementFilter = new LogicalOrFilter(filters);
 
             FilteredElementCollector collector
                 = new FilteredElementCollector(doc).WherePasses(elementFilter);
 
-            // create a dictionary with all the properties for each object
+            // create a dictionary with all the properties for each category
             foreach (var fi in collector)
             {
                 string category = fi.Category.Name;
@@ -157,40 +173,51 @@ namespace RvtVa3c
                     {
                         _parameterDictionary.Add(category, parameterNames);
                     }
-
-
-                    ElementId idType = fi.GetTypeId();
-
-                    if (ElementId.InvalidElementId != idType)
+                    if (includeType)
                     {
-                        Element typ = doc.GetElement(idType);
-                        parameters = typ.GetOrderedParameters();
-                        List<string> parameterTypes = new List<string>();
-                        foreach (Parameter p in parameters)
-                        {
-                            string pName = "Type " + p.Definition.Name;
-                            string tempVal = "";
-                            if (!_parameterDictionary.ContainsKey(pName))
-                            {
-                                if (StorageType.String == p.StorageType)
-                                {
-                                    tempVal = p.AsString();
-                                }
-                                else
-                                {
-                                    tempVal = p.AsValueString();
-                                }
+                        ElementId idType = fi.GetTypeId();
 
-                                if (!string.IsNullOrEmpty(tempVal))
+                        if (ElementId.InvalidElementId != idType)
+                        {
+                            Element typ = doc.GetElement(idType);
+                            parameters = typ.GetOrderedParameters();
+                            List<string> parameterTypes = new List<string>();
+                            foreach (Parameter p in parameters)
+                            {
+                                string pName = "Type " + p.Definition.Name;
+                                string tempVal = "";
+                                if (!_parameterDictionary[category].Contains(pName))
                                 {
-                                    parameterTypes.Add(tempVal);
+                                    if (StorageType.String == p.StorageType)
+                                    {
+                                        tempVal = p.AsString();
+                                    }
+                                    else
+                                    {
+                                        tempVal = p.AsValueString();
+                                    }
+
+                                    if (!string.IsNullOrEmpty(tempVal))
+                                    {
+                                        if (_parameterDictionary.ContainsKey(category))
+                                        {
+                                            if (!_parameterDictionary[category].Contains(pName))
+                                            {
+                                                _parameterDictionary[category].Add(pName);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            parameterTypes.Add(pName);
+                                        }
+                                    }
                                 }
                             }
-                        }
-                        if (parameterTypes.Count > 0)
-                        {
-                            _parameterDictionary[category].AddRange(parameterTypes);
-                        }
+                            if (parameterTypes.Count > 0)
+                            {
+                                _parameterDictionary[category].AddRange(parameterTypes);
+                            }
+                        } 
                     }
                 }
             }
@@ -199,30 +226,38 @@ namespace RvtVa3c
             _filter = new ParameterFilter();
 
             _tabControl = new TabControl();
-            _tabControl.Size = new System.Drawing.Size(420, 220);
+            _tabControl.Size = new System.Drawing.Size(600, 375);
+            _tabControl.Location = new System.Drawing.Point(0, 55);
+            _tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                | System.Windows.Forms.AnchorStyles.Left)
+                | System.Windows.Forms.AnchorStyles.Right)));
+            
+            int j = 8;
+            
+            // Populate the parameters as a checkbox in each tab
             foreach (string c in _parameterDictionary.Keys)
             {
                 //Create a checklist
                 CheckedListBox checkList = new CheckedListBox();
+                
                 //set the properties of the checklist
-                checkList.Size = new System.Drawing.Size(400, 200);
-                checkList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                | System.Windows.Forms.AnchorStyles.Left)
-                | System.Windows.Forms.AnchorStyles.Right)));
+                checkList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left| System.Windows.Forms.AnchorStyles.Right)));
+                checkList.FormattingEnabled = true;
+                checkList.HorizontalScrollbar = true;
+                checkList.Items.AddRange(_parameterDictionary[c].ToArray());
                 checkList.MultiColumn = true;
+                checkList.Size = new System.Drawing.Size(560, 360);
                 checkList.ColumnWidth = 200;
                 checkList.CheckOnClick = true;
-                checkList.BorderStyle = System.Windows.Forms.BorderStyle.None;
-                checkList.HorizontalScrollbar = false;
-
-                checkList.Items.AddRange(_parameterDictionary[c].ToArray());
+                checkList.TabIndex = j;
+                j++;
 
                 for (int i = 0; i <= (checkList.Items.Count - 1); i++)
                 {
                     checkList.SetItemCheckState(i, CheckState.Checked);
                 }
 
-                //add A tab
+                //add a tab
                 TabPage tab = new TabPage(c);
                 tab.Name = c;
 
@@ -233,14 +268,13 @@ namespace RvtVa3c
                 _tabControl.TabPages.Add(tab);
             }
 
-            //attach the tab control to the filter form
+            // Attach the tab control to the filter form
             _filter.Controls.Add(_tabControl);
-
-
-            //DISPLAY FILTER UI
+            
+            // DISPLAY FILTER UI
             _filter.ShowDialog();
 
-            //loop thru each tab
+            // Loop thru each tab and get the parameters to export
             foreach (TabPage tab in _tabControl.TabPages)
             {
                 List<string> parametersToExport = new List<string>();
@@ -248,12 +282,11 @@ namespace RvtVa3c
                 {
                     parametersToExport.Add(checkedP.ToString());
                 }
-
                 _toExportDictionary.Add(tab.Name, parametersToExport);
             }
-
-
         }
+
+
         #region SelectFile
         /// <summary>
         /// Store the last user selected output folder
@@ -297,9 +330,6 @@ namespace RvtVa3c
         }
         #endregion // SelectFile
 
-
-
-
         public Result Execute(
           ExternalCommandData commandData,
           ref string message,
@@ -312,23 +342,6 @@ namespace RvtVa3c
 
             if (doc.ActiveView is View3D)
             {
-                TaskDialog td = new TaskDialog("Ask user to filter parameters");
-                td.Title = "Filter parameters";
-                td.CommonButtons = TaskDialogCommonButtons.No | TaskDialogCommonButtons.Yes;
-                td.MainInstruction = "Do you want to filter the parameters to be exported?";
-                td.MainContent = "Click Yes and you will be able to select parameters for each category in the next window";
-                td.AllowCancellation = true;
-                TaskDialogResult tdResult = td.Show();
-
-                if (tdResult == TaskDialogResult.Yes)
-                {
-                   // Call the filter
-                    filterElementParameters(doc);
-                    _filterParameters = true;
-                    if (ParameterFilter.status == "cancelled") return Result.Cancelled;
-                }
-                else { _filterParameters = false; }
-
                 string filename = doc.PathName;
                 if (0 == filename.Length)
                 {
@@ -336,9 +349,42 @@ namespace RvtVa3c
                 }
                 if (null == _output_folder_path)
                 {
-                    _output_folder_path = Path.GetDirectoryName(
-                      filename);
+                    //sometimes the command fails if the file is detached from central and not saved locally
+                    try
+                    {
+                        _output_folder_path = Path.GetDirectoryName(
+                          filename);
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("Folder not found", "Please, save the file and run the command again");
+                        return Result.Failed;
+                    }
                 }
+
+                //Dialog to ask the user if they want to choose which parameters to export or just export them all
+                TaskDialog td = new TaskDialog("Ask user to filter parameters");
+                td.Title = "Filter parameters";
+                td.CommonButtons = TaskDialogCommonButtons.No | TaskDialogCommonButtons.Yes;
+                td.MainInstruction = "Do you want to filter the parameters of the objects to be exported?";
+                td.MainContent = "Click Yes and you will be able to select parameters for each category in the next window";
+                td.AllowCancellation = true;
+                td.VerificationText = "Check this to include type properties";
+                TaskDialogResult tdResult = td.Show();
+
+                if (td.WasVerificationChecked()) includeT = true;
+                else includeT = false;
+
+                if (tdResult == TaskDialogResult.Yes)
+                {
+                   // Filter the properties
+                    filterElementParameters(doc, includeT);
+                    _filterParameters = true;
+                    if (ParameterFilter.status == "cancelled") return Result.Cancelled;
+                }
+                else _filterParameters = false; 
+
+                // Save file
                 filename = Path.GetFileName(filename) + ".js";
 
                 if (SelectFile(ref _output_folder_path,
@@ -353,8 +399,6 @@ namespace RvtVa3c
                     return Result.Succeeded;
                 }
                 return Result.Cancelled;
-
-
             }
             else
             {
