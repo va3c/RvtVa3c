@@ -243,16 +243,16 @@ namespace RvtVa3c
 
             string key;
             string val;
-
-            foreach (Parameter p in parameters)
+            string cat = e.Category.Name;
+            //making sure that the file has a tab for that category
+            if (Command._toExportDictionary.ContainsKey(cat))
             {
-                key = p.Definition.Name;
-
-                //making sure that the file has a tab for structural columns 
-                if (Command._toExportDictionary.ContainsKey(e.Category.Name))
+                foreach (Parameter p in parameters)
                 {
+                    key = p.Definition.Name;
+
                     //checking if the property has been checked
-                    if (Command._toExportDictionary[e.Category.Name].Contains(key))
+                    if (Command._toExportDictionary[cat].Contains(key))
                     {
                         if (!a.ContainsKey(key))
                         {
@@ -271,56 +271,62 @@ namespace RvtVa3c
                             }
                         }
                     }
+
+                    //// if the category is not in the custom export dictionary, export everything
+                    //else
+                    //{
+                    //    if (!a.ContainsKey(key))
+                    //    {
+                    //        if (StorageType.String == p.StorageType)
+                    //        {
+                    //            val = p.AsString();
+                    //        }
+                    //        else
+                    //        {
+                    //            val = p.AsValueString();
+                    //        }
+
+                    //        if (!string.IsNullOrEmpty(val))
+                    //        {
+                    //            a.Add(key, val);
+                    //        }
+                    //    }
+                    //}
                 }
-                // if the category is not in the custom export dictionary, export everything
-                else
+
+                if (includeType)
                 {
-                    if (!a.ContainsKey(key))
+                    ElementId idType = e.GetTypeId();
+
+                    if (ElementId.InvalidElementId != idType)
                     {
-                        if (StorageType.String == p.StorageType)
+                        Document doc = e.Document;
+                        Element typ = doc.GetElement(idType);
+                        parameters = typ.GetOrderedParameters();
+                        
+                        foreach (Parameter p in parameters)
                         {
-                            val = p.AsString();
-                        }
-                        else
-                        {
-                            val = p.AsValueString();
-                        }
+                            key = "Type " + p.Definition.Name;
 
-                        if (!string.IsNullOrEmpty(val))
-                        {
-                            a.Add(key, val);
-                        }
-                    }
-                }
-            }
-
-            if (includeType)
-            {
-                ElementId idType = e.GetTypeId();
-
-                if (ElementId.InvalidElementId != idType)
-                {
-                    Document doc = e.Document;
-                    Element typ = doc.GetElement(idType);
-                    parameters = typ.GetOrderedParameters();
-                    foreach (Parameter p in parameters)
-                    {
-                        key = "Type " + p.Definition.Name;
-
-                        if (!a.ContainsKey(key))
-                        {
-                            if (StorageType.String == p.StorageType)
+                            //checking if the property has been checked
+                            if (Command._toExportDictionary[cat].Contains(key))
                             {
-                                val = p.AsString();
-                            }
-                            else
-                            {
-                                val = p.AsValueString();
-                            }
+                                if (!a.ContainsKey(key))
+                                {
+                                    if (StorageType.String == p.StorageType)
+                                    {
+                                        val = p.AsString();
+                                    }
+                                    else
+                                    {
+                                        val = p.AsValueString();
+                                    }
 
-                            if (!string.IsNullOrEmpty(val))
-                            {
-                                a.Add(key, val);
+                                    if (!string.IsNullOrEmpty(val))
+                                    {
+                                        a.Add(key, val);
+                                    }
+                                } 
                             }
                         }
                     }
