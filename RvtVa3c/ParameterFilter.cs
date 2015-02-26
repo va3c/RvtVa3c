@@ -17,34 +17,48 @@ namespace RvtVa3c
             InitializeComponent();
         }
 
-        private bool areAllChecked = true;
+
         public static string status = "";
-        
+        private bool changeAll = false;
+        /// <summary>
+        /// Function to check or uncheck all the checkboxes in a tab
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkUncheck_Click(object sender, EventArgs e)
         {
-            string thisTab = Command._tabControl.SelectedTab.Name;
+            
             int index = Command._tabControl.SelectedIndex;
-
-            CheckedListBox currentCheckList = (CheckedListBox)((TabPage)(Command._tabControl.GetControl(index))).Controls[0];
-
-            if (!areAllChecked)
+            CheckedListBox currentCheckList = new CheckedListBox();
+            if (!changeAll)
             {
-                for (int i = 0; i <= (currentCheckList.Items.Count - 1); i++)
-                {
-                    currentCheckList.SetItemCheckState(i, CheckState.Checked);
-                }
-                areAllChecked = true;
+                currentCheckList = (CheckedListBox)((TabPage)(Command._tabControl.GetControl(index))).Controls[0];
+
+                bool areAllChecked = true;
+                if (currentCheckList.CheckedItems.Count < currentCheckList.Items.Count) areAllChecked = false;
+                checkUncheckBoxes(currentCheckList, areAllChecked);
             }
             else
             {
-                for (int i = 0; i <= (currentCheckList.Items.Count - 1); i++)
+                List<CheckedListBox> allCheckLists = new List<CheckedListBox>();
+                bool areAllChecked = true;
+                
+                foreach (TabPage tab in Command._tabControl.TabPages)
                 {
-                    currentCheckList.SetItemCheckState(i, CheckState.Unchecked);
+                    currentCheckList = (CheckedListBox) tab.Controls[0];
+                    if (currentCheckList.CheckedItems.Count < currentCheckList.Items.Count)
+                    {
+                        areAllChecked = false;
+                        break;
+                    }
                 }
-                areAllChecked = false;
 
+                foreach (TabPage tab in Command._tabControl.TabPages)
+                {
+                    currentCheckList = (CheckedListBox)tab.Controls[0];
+                    checkUncheckBoxes(currentCheckList, areAllChecked);
+                }
             }
-
         }
 
         private void export_button_Click(object sender, EventArgs e)
@@ -58,8 +72,28 @@ namespace RvtVa3c
             status = "cancelled";
         }
 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked) changeAll = false;
+            else changeAll = true;
+        }
 
-
-
+        private void checkUncheckBoxes(CheckedListBox currentCheckList, bool areAllChecked)
+        {
+            if (!areAllChecked)
+            {
+                for (int i = 0; i <= (currentCheckList.Items.Count - 1); i++)
+                {
+                    currentCheckList.SetItemCheckState(i, CheckState.Checked);
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= (currentCheckList.Items.Count - 1); i++)
+                {
+                    currentCheckList.SetItemCheckState(i, CheckState.Unchecked);
+                }
+            }
+        }
     }
 }
