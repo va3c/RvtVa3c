@@ -100,137 +100,150 @@ namespace RvtVa3c
             _parameterDictionary = new Dictionary<string, List<string>>();
             _toExportDictionary = new Dictionary<string, List<string>>();
 
-            //GET THE PARAMETERS OF THE OBJECTS
-            //Filters for the objects we want to get parameters of
-            ElementClassFilter familyInstanceFilter = new ElementClassFilter(typeof(FamilyInstance));
-            ElementClassFilter wallFilter = new ElementClassFilter(typeof(Wall));
-            ElementClassFilter floorFilter = new ElementClassFilter(typeof(Floor));
-            ElementCategoryFilter analyticalWallFilter = new ElementCategoryFilter(BuiltInCategory.OST_WallAnalytical);
-            ElementCategoryFilter analyticalFloorFilter = new ElementCategoryFilter(BuiltInCategory.OST_FloorAnalytical);
+            ////GET THE PARAMETERS OF THE OBJECTS
+            ////Filters for the objects we want to get parameters of
+            //ElementClassFilter familyInstanceFilter = new ElementClassFilter(typeof(FamilyInstance));
+            //ElementClassFilter wallFilter = new ElementClassFilter(typeof(Wall));
+            //ElementClassFilter floorFilter = new ElementClassFilter(typeof(Floor));
+            //ElementCategoryFilter roofFilter = new ElementCategoryFilter(BuiltInCategory.OST_Roofs);
+            //ElementCategoryFilter topographyFilter = new ElementCategoryFilter(BuiltInCategory.OST_Topography);
+            
+            //ElementCategoryFilter analyticalWallFilter = new ElementCategoryFilter(BuiltInCategory.OST_WallAnalytical);
+            //ElementCategoryFilter analyticalFloorFilter = new ElementCategoryFilter(BuiltInCategory.OST_FloorAnalytical);
 
-
-            ElementCategoryFilter roofFilter = new ElementCategoryFilter(BuiltInCategory.OST_Roofs);
-            ElementCategoryFilter topographyFilter = new ElementCategoryFilter(BuiltInCategory.OST_Topography);
-
-            List<ElementFilter> filters = new List<ElementFilter>(); ;
-            filters.Add((ElementFilter)familyInstanceFilter);
-            filters.Add((ElementFilter)wallFilter);
-            filters.Add((ElementFilter)floorFilter);
-            filters.Add((ElementFilter)roofFilter);
-            filters.Add((ElementFilter)topographyFilter);
-
-            //get the analytical objects that can be displayed in the web viewer if the analytical model is ON
-            if (!doc.ActiveView.AreAnalyticalModelCategoriesHidden)
-            {
-                filters.Add((ElementFilter)analyticalWallFilter);
-                filters.Add((ElementFilter)analyticalFloorFilter);
-            }
-
-            LogicalOrFilter elementFilter = new LogicalOrFilter(filters);
-
-            FilteredElementCollector collector
-                = new FilteredElementCollector(doc).WherePasses(elementFilter);
-
-            Autodesk.Revit.DB.View3D v = (View3D)doc.ActiveView;
-            IEnumerable<Element> coll = null;
            
-            Options opt = new Options();
-            opt.View = doc.ActiveView;
+            //List<ElementFilter> filters = new List<ElementFilter>(); ;
+            //filters.Add((ElementFilter)familyInstanceFilter);
+            //filters.Add((ElementFilter)wallFilter);
+            //filters.Add((ElementFilter)floorFilter);
+            //filters.Add((ElementFilter)roofFilter);
+            //filters.Add((ElementFilter)topographyFilter);
+
+
             
 
-            coll = from Element e in collector
-                   where !e.IsHidden(v) && e.get_Geometry(opt) != null && !(e is FamilySymbol) && !(e is Family)
-                   select e;
+            ////get the analytical objects that can be displayed in the web viewer if the analytical model is ON
+            //if (!doc.ActiveView.AreAnalyticalModelCategoriesHidden)
+            //{
+            //    filters.Add((ElementFilter)analyticalWallFilter);
+            //    filters.Add((ElementFilter)analyticalFloorFilter);
+            //}
 
-          
+            //LogicalOrFilter elementFilter = new LogicalOrFilter(filters);
+
+            //FilteredElementCollector collector
+            //    = new FilteredElementCollector(doc).WherePasses(elementFilter);
+
+            //Autodesk.Revit.DB.View3D v = (View3D)doc.ActiveView;
+            //IEnumerable<Element> coll = null;
+           
+            //Options opt = new Options();
+            //opt.View = doc.ActiveView;
+            
+
+            //coll = from Element e in collector
+            //       where !e.IsHidden(v) && e.get_Geometry(opt) != null
+            //       select e;
+
+
+            ElementOwnerViewFilter elementOwnerViewFilter =
+        new ElementOwnerViewFilter(doc.ActiveView.Id);
+            FilteredElementCollector coll2 =
+              new FilteredElementCollector(doc, doc.ActiveView.Id);
+
+
             // create a dictionary with all the properties for each category
-            foreach (var fi in coll)
+            foreach (var fi in coll2)
             {
-                //skip elements that are not geometries
-                if (fi.LevelId.IntegerValue == -1) continue;
-                string category = fi.Category.Name;
+                string t = fi.ToString();
+
                 
-                IList<Parameter> parameters = fi.GetOrderedParameters();
-                List<string> parameterNames = new List<string>();
+                string category = fi.Category.Name;
 
-                foreach (Parameter p in parameters)
+                if (category!= "Title Blocks" && category!="Generic Annotations" && category != "Detail Items")
                 {
-                    string pName = p.Definition.Name;
-                    string tempVal = "";
+                    IList<Parameter> parameters = fi.GetOrderedParameters();
+                    List<string> parameterNames = new List<string>();
 
-                    if (StorageType.String == p.StorageType)
+                    foreach (Parameter p in parameters)
                     {
-                        tempVal = p.AsString();
-                    }
-                    else
-                    {
-                        tempVal = p.AsValueString();
-                    }
-                    if (!string.IsNullOrEmpty(tempVal))
-                    {
-                        if (_parameterDictionary.ContainsKey(category))
+                        string pName = p.Definition.Name;
+                        string tempVal = "";
+
+                        if (StorageType.String == p.StorageType)
                         {
-                            if (!_parameterDictionary[category].Contains(pName))
-                            {
-                                _parameterDictionary[category].Add(pName);
-                            }
+                            tempVal = p.AsString();
                         }
                         else
                         {
-                            parameterNames.Add(pName);
+                            tempVal = p.AsValueString();
+                        }
+                        if (!string.IsNullOrEmpty(tempVal))
+                        {
+                            if (_parameterDictionary.ContainsKey(category))
+                            {
+                                if (!_parameterDictionary[category].Contains(pName))
+                                {
+                                    _parameterDictionary[category].Add(pName);
+                                }
+                            }
+                            else
+                            {
+                                parameterNames.Add(pName);
+                            }
                         }
                     }
-                }
-                if (parameterNames.Count > 0)
-                {
-                    _parameterDictionary.Add(category, parameterNames);
-                }
-                if (includeType)
-                {
-                    ElementId idType = fi.GetTypeId();
-
-                    if (ElementId.InvalidElementId != idType)
+                    if (parameterNames.Count > 0)
                     {
-                        Element typ = doc.GetElement(idType);
-                        parameters = typ.GetOrderedParameters();
-                        List<string> parameterTypes = new List<string>();
-                        foreach (Parameter p in parameters)
-                        {
-                            string pName = "Type " + p.Definition.Name;
-                            string tempVal = "";
-                            if (!_parameterDictionary[category].Contains(pName))
-                            {
-                                if (StorageType.String == p.StorageType)
-                                {
-                                    tempVal = p.AsString();
-                                }
-                                else
-                                {
-                                    tempVal = p.AsValueString();
-                                }
+                        _parameterDictionary.Add(category, parameterNames);
+                    }
+                    if (includeType)
+                    {
+                        ElementId idType = fi.GetTypeId();
 
-                                if (!string.IsNullOrEmpty(tempVal))
+                        if (ElementId.InvalidElementId != idType)
+                        {
+                            Element typ = doc.GetElement(idType);
+                            parameters = typ.GetOrderedParameters();
+                            List<string> parameterTypes = new List<string>();
+                            foreach (Parameter p in parameters)
+                            {
+                                string pName = "Type " + p.Definition.Name;
+                                string tempVal = "";
+                                if (!_parameterDictionary[category].Contains(pName))
                                 {
-                                    if (_parameterDictionary.ContainsKey(category))
+                                    if (StorageType.String == p.StorageType)
                                     {
-                                        if (!_parameterDictionary[category].Contains(pName))
-                                        {
-                                            _parameterDictionary[category].Add(pName);
-                                        }
+                                        tempVal = p.AsString();
                                     }
                                     else
                                     {
-                                        parameterTypes.Add(pName);
+                                        tempVal = p.AsValueString();
+                                    }
+
+                                    if (!string.IsNullOrEmpty(tempVal))
+                                    {
+                                        if (_parameterDictionary.ContainsKey(category))
+                                        {
+                                            if (!_parameterDictionary[category].Contains(pName))
+                                            {
+                                                _parameterDictionary[category].Add(pName);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            parameterTypes.Add(pName);
+                                        }
                                     }
                                 }
                             }
+                            if (parameterTypes.Count > 0)
+                            {
+                                _parameterDictionary[category].AddRange(parameterTypes);
+                            }
                         }
-                        if (parameterTypes.Count > 0)
-                        {
-                            _parameterDictionary[category].AddRange(parameterTypes);
-                        }
-                    }
-                   
+
+                    } 
                 }
             }
 
@@ -394,9 +407,16 @@ namespace RvtVa3c
                     // Filter the properties
                     filterElementParameters(doc, includeT);
                     _filterParameters = true;
-                    if (ParameterFilter.status == "cancelled") return Result.Cancelled;
+                    if (ParameterFilter.status == "cancelled")
+                    {
+                        ParameterFilter.status = "";
+                        return Result.Cancelled;
+                    }
                 }
                 else _filterParameters = false;
+
+
+                ViewOrientation3D vo = ((View3D)doc.ActiveView).GetOrientation();
 
                 // Save file
                 filename = Path.GetFileName(filename) + ".js";
