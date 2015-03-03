@@ -1,8 +1,6 @@
-#region Namespaces
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-#endregion // Namespaces
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -12,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "Autodesk Inc." )]
 [assembly: AssemblyProduct( "RvtVa3c" )]
-[assembly: AssemblyCopyright( "Copyright 2014-2015 © Jeremy Tammik Autodesk Inc." )]
+[assembly: AssemblyCopyright( "Copyright 2014 © Jeremy Tammik Autodesk Inc." )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -44,8 +42,6 @@ using System.Runtime.InteropServices;
 // 2014-10-28 2015.0.0.25 added support for runtime reading of user settings and switch between indented JSON or not to optionally reduce file size
 // 2014-10-29 2015.0.0.26 user setting enhancements
 // 2014-11-24 2015.0.0.27 skip elements with null category
-// 2014-11-25 2015.0.0.28 skip elements with null category in OnElementEnd as well
-// 2015-02-15 2015.0.0.29 incremented copyright year
 //
-[assembly: AssemblyVersion( "2015.0.0.29" )]
-[assembly: AssemblyFileVersion( "2015.0.0.29" )]
+[assembly: AssemblyVersion( "2015.0.0.27" )]
+[assembly: AssemblyFileVersion( "2015.0.0.27" )]
