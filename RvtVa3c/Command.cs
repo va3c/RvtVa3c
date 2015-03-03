@@ -100,67 +100,15 @@ namespace RvtVa3c
             _parameterDictionary = new Dictionary<string, List<string>>();
             _toExportDictionary = new Dictionary<string, List<string>>();
 
-            ////GET THE PARAMETERS OF THE OBJECTS
-            ////Filters for the objects we want to get parameters of
-            //ElementClassFilter familyInstanceFilter = new ElementClassFilter(typeof(FamilyInstance));
-            //ElementClassFilter wallFilter = new ElementClassFilter(typeof(Wall));
-            //ElementClassFilter floorFilter = new ElementClassFilter(typeof(Floor));
-            //ElementCategoryFilter roofFilter = new ElementCategoryFilter(BuiltInCategory.OST_Roofs);
-            //ElementCategoryFilter topographyFilter = new ElementCategoryFilter(BuiltInCategory.OST_Topography);
-            
-            //ElementCategoryFilter analyticalWallFilter = new ElementCategoryFilter(BuiltInCategory.OST_WallAnalytical);
-            //ElementCategoryFilter analyticalFloorFilter = new ElementCategoryFilter(BuiltInCategory.OST_FloorAnalytical);
-
-           
-            //List<ElementFilter> filters = new List<ElementFilter>(); ;
-            //filters.Add((ElementFilter)familyInstanceFilter);
-            //filters.Add((ElementFilter)wallFilter);
-            //filters.Add((ElementFilter)floorFilter);
-            //filters.Add((ElementFilter)roofFilter);
-            //filters.Add((ElementFilter)topographyFilter);
-
-
-            
-
-            ////get the analytical objects that can be displayed in the web viewer if the analytical model is ON
-            //if (!doc.ActiveView.AreAnalyticalModelCategoriesHidden)
-            //{
-            //    filters.Add((ElementFilter)analyticalWallFilter);
-            //    filters.Add((ElementFilter)analyticalFloorFilter);
-            //}
-
-            //LogicalOrFilter elementFilter = new LogicalOrFilter(filters);
-
-            //FilteredElementCollector collector
-            //    = new FilteredElementCollector(doc).WherePasses(elementFilter);
-
-            //Autodesk.Revit.DB.View3D v = (View3D)doc.ActiveView;
-            //IEnumerable<Element> coll = null;
-           
-            //Options opt = new Options();
-            //opt.View = doc.ActiveView;
-            
-
-            //coll = from Element e in collector
-            //       where !e.IsHidden(v) && e.get_Geometry(opt) != null
-            //       select e;
-
-
-            ElementOwnerViewFilter elementOwnerViewFilter =
-        new ElementOwnerViewFilter(doc.ActiveView.Id);
-            FilteredElementCollector coll2 =
-              new FilteredElementCollector(doc, doc.ActiveView.Id);
-
+            FilteredElementCollector collector = new FilteredElementCollector(doc, doc.ActiveView.Id);
 
             // create a dictionary with all the properties for each category
-            foreach (var fi in coll2)
+            foreach (var fi in collector)
             {
-                string t = fi.ToString();
 
-                
                 string category = fi.Category.Name;
 
-                if (category!= "Title Blocks" && category!="Generic Annotations" && category != "Detail Items")
+                if (category!= "Title Blocks" && category!="Generic Annotations" && category != "Detail Items" && category!= "Cameras")
                 {
                     IList<Parameter> parameters = fi.GetOrderedParameters();
                     List<string> parameterNames = new List<string>();
