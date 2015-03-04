@@ -46,6 +46,7 @@ using System.Runtime.InteropServices;
 // 2014-11-24 2015.0.0.27 skip elements with null category
 // 2014-11-25 2015.0.0.28 skip elements with null category in OnElementEnd as well
 // 2015-02-15 2015.0.0.29 incremented copyright year
+// 2015-03-04 2015.0.0.30 integrated anapujol's UI to filter parameters, cf. description in https://github.com/va3c/RvtVa3c/pull/6
 //
-[assembly: AssemblyVersion( "2015.0.0.29" )]
-[assembly: AssemblyFileVersion( "2015.0.0.29" )]
+[assembly: AssemblyVersion( "2015.0.0.30" )]
+[assembly: AssemblyFileVersion( "2015.0.0.30" )]
