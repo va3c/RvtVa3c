@@ -31,6 +31,8 @@ This will open the Revit installation you referred to, and install the plugin, w
 
 And wonderfully exports the your Revit model to a JSON file.
 
+For more details, please refer to the [Revit API Getting Started](http://thebuildingcoder.typepad.com/blog/about-the-author.html#2) material, especially the DevTV and My First Revit Plugin tutorials.
+
 
 
 ## Tools and Technologies
