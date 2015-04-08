@@ -12,7 +12,7 @@ It is installed in the standard manner, i.e., by copying two files to the standa
 - The .NET assembly DLL RvtVa3c.dll
 - The add-in manifest RvtVa3c.addin
 
-In order to generate the DLL, you download and compile:
+In order to generate the DLL, you download and compile the Visual Studio solution:
 
 - Download the git directory RvtVa3c-gh-pages.
 - Open the solution file RvtVa3c.sln in Visual Studio 2012 or later.
