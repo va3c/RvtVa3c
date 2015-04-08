@@ -14,7 +14,7 @@ It is installed in the standard manner, i.e., by copying two files to the standa
 
 In order to generate the DLL, you download and compile the Visual Studio solution:
 
-- Download the git directory RvtVa3c-gh-pages.
+- Download or clone the [RvtVa3c GitHub repository](https://github.com/va3c/RvtVa3c).
 - Open the solution file RvtVa3c.sln in Visual Studio 2012 or later.
 - Build solution locally:
     - Add references to the Revit API assembly files RevitAPI.dll and RevitAPIUI.dll, located in your Revit installation directory, e.g.,C:\Program Files\Autodesk\Revit Architecture 2015.
