@@ -19,11 +19,11 @@ In order to generate the DLL, you download and compile the Visual Studio solutio
 - Build the solution locally:
     - Add references to the Revit API assembly files RevitAPI.dll and RevitAPIUI.dll, located in your Revit installation directory, e.g.,
 
-    C:\Program Files\Autodesk\Revit Architecture 2015
+        C:\Program Files\Autodesk\Revit Architecture 2015
 
     - If you wish to debug, set up the path to the Revit executable in the Debug tab, Start External Program; change the path to your system installation, e.g.,
 
-    C:\Program Files\Autodesk\Revit Architecture 2015\Revit.exe
+        C:\Program Files\Autodesk\Revit Architecture 2015\Revit.exe
 
     - Build the solution.
 
