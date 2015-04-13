@@ -54,7 +54,9 @@ namespace RvtVa3c
     /// Export a given 3D view to JSON using
     /// our custom exporter context.
     /// </summary>
-    public void ExportView3D( View3D view3d, string filename )
+    public void ExportView3D( 
+      View3D view3d, 
+      string filename )
     {
       AppDomain.CurrentDomain.AssemblyResolve
         += CurrentDomain_AssemblyResolve;
@@ -81,11 +83,9 @@ namespace RvtVa3c
 
     #region UI to Filter Parameters
     public static ParameterFilter _filter;
-    public static bool _filterParameters = false;
     public static TabControl _tabControl;
     public static Dictionary<string, List<string>> _parameterDictionary;
     public static Dictionary<string, List<string>> _toExportDictionary;
-    public static bool includeT = false;
 
     /// <summary>
     /// Function to filter the parameters of the objects in the scene
@@ -311,89 +311,88 @@ namespace RvtVa3c
     {
       UIApplication uiapp = commandData.Application;
       UIDocument uidoc = uiapp.ActiveUIDocument;
-      Autodesk.Revit.ApplicationServices.Application app = uiapp.Application;
+      Autodesk.Revit.ApplicationServices.Application app 
+        = uiapp.Application;
       Document doc = uidoc.Document;
 
-      if( doc.ActiveView is View3D )
-      {
-        string filename = doc.PathName;
-        if( 0 == filename.Length )
-        {
-          filename = doc.Title;
-        }
-        if( null == _output_folder_path )
-        {
-          // Sometimes the command fails if the file is 
-          // detached from central and not saved locally
+      // Check that we are in a 3D view.
 
-          try
-          {
-            _output_folder_path = Path.GetDirectoryName(
-              filename );
-          }
-          catch
-          {
-            TaskDialog.Show( "Folder not found", 
-              "Please save the file and run the command again." );
-            return Result.Failed;
-          }
-        }
+      View3D view = doc.ActiveView as View3D;
 
-        // Dialog to ask the user if they want to 
-        // choose which parameters to export or just 
-        // export them all.
-
-        TaskDialog td = new TaskDialog( "Ask user to filter parameters" );
-        td.Title = "Filter parameters";
-        td.CommonButtons = TaskDialogCommonButtons.No | TaskDialogCommonButtons.Yes;
-        td.MainInstruction = "Do you want to filter the parameters of the objects to be exported?";
-        td.MainContent = "Click Yes and you will be able to select parameters for each category in the next window";
-        td.AllowCancellation = true;
-        td.VerificationText = "Check this to include type properties";
-        TaskDialogResult tdResult = td.Show();
-
-        if( td.WasVerificationChecked() ) includeT = true;
-        else includeT = false;
-
-        if( tdResult == TaskDialogResult.Yes )
-        {
-          // Filter the properties
-          filterElementParameters( doc, includeT );
-          _filterParameters = true;
-          if( ParameterFilter.status == "cancelled" )
-          {
-            ParameterFilter.status = "";
-            return Result.Cancelled;
-          }
-        }
-        else _filterParameters = false;
-
-
-        ViewOrientation3D vo = ( (View3D) doc.ActiveView ).GetOrientation();
-
-        // Save file
-
-        filename = Path.GetFileName( filename ) + ".js";
-
-        if( SelectFile( ref _output_folder_path,
-          ref filename ) )
-        {
-          filename = Path.Combine( _output_folder_path,
-            filename );
-
-          ExportView3D( doc.ActiveView as View3D,
-            filename );
-
-          return Result.Succeeded;
-        }
-        return Result.Cancelled;
-      }
-      else
+      if( null == view )
       {
         Util.ErrorMsg(
           "You must be in a 3D view to export." );
+
+        return Result.Failed;
       }
-      return Result.Failed;
+
+      // Prompt for output filename selection.
+
+      string filename = doc.PathName;
+
+      if( 0 == filename.Length )
+      {
+        filename = doc.Title;
+      }
+
+      if( null == _output_folder_path )
+      {
+        // Sometimes the command fails if the file is 
+        // detached from central and not saved locally
+
+        try
+        {
+          _output_folder_path = Path.GetDirectoryName(
+            filename );
+        }
+        catch
+        {
+          TaskDialog.Show( "Folder not found",
+            "Please save the file and run the command again." );
+          return Result.Failed;
+        }
+      }
+
+      filename = Path.GetFileName( filename ) + ".js";
+
+      if( !SelectFile( ref _output_folder_path,
+        ref filename ) )
+      {
+        return Result.Cancelled;
+      }
+
+      filename = Path.Combine( _output_folder_path, 
+        filename );
+
+      // Ask user whether to interactively choose 
+      // which parameters to export or just export 
+      // them all.
+
+      TaskDialog td = new TaskDialog( "Ask user to filter parameters" );
+      td.Title = "Filter parameters";
+      td.CommonButtons = TaskDialogCommonButtons.No | TaskDialogCommonButtons.Yes;
+      td.MainInstruction = "Do you want to filter the parameters of the objects to be exported?";
+      td.MainContent = "Click Yes and you will be able to select parameters for each category in the next window";
+      td.AllowCancellation = true;
+      td.VerificationText = "Check this to include type properties";
+
+      if( TaskDialogResult.Yes == td.Show() )
+      {
+        filterElementParameters( doc, td.WasVerificationChecked() );
+        if( ParameterFilter.status == "cancelled" )
+        {
+          ParameterFilter.status = "";
+          return Result.Cancelled;
+        }
+      }
+
+      // Save file.
+
+      ExportView3D( doc.ActiveView as View3D,
+        filename );
+
+      return Result.Succeeded;
     }
   }
 }
