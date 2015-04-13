@@ -286,8 +286,9 @@ namespace RvtVa3c
 
     public override string ToString()
     {
-        return myjs;
+      return myjs;
     }
+
     /// <summary>
     /// Set the current material
     /// </summary>
@@ -398,7 +399,7 @@ namespace RvtVa3c
       return true;
     }
 
-    public  void Finish()
+    public void Finish()
     {
       // Finish populating scene
 
@@ -430,11 +431,10 @@ namespace RvtVa3c
           ? Formatting.Indented
           : Formatting.None;
 
-        myjs = JsonConvert.SerializeObject(
-          _container, formatting, settings );
+      myjs = JsonConvert.SerializeObject(
+        _container, formatting, settings );
 
-        
-      File.WriteAllText( _filename, myjs);
+      File.WriteAllText( _filename, myjs );
 
 #if USE_DYNAMIC_JSON
       // This saves the whole hassle of explicitly 
@@ -767,8 +767,9 @@ namespace RvtVa3c
 
       _currentElement.userData = d;
 
-        //also add guid to user data dict
-      _currentElement.userData.Add("revit_id", uid);
+      // Add Revit element unique id to user data dict.
+
+      _currentElement.userData.Add( "revit_id", uid );
 
       _objects.Add( _currentElement.uuid, _currentElement );
 
