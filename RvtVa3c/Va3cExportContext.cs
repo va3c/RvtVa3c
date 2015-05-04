@@ -28,7 +28,7 @@ namespace RvtVa3c
   public class Va3cExportContext : IExportContext
   {
     /// <summary>
-    /// Scale entire top level BIM object nove in JSON
+    /// Scale entire top level BIM object node in JSON
     /// output. A scale of 1.0 will output the model in 
     /// millimetres. Currently we scale it to decimetres
     /// so that a typical model has a chance of fitting 
