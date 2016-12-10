@@ -5,12 +5,12 @@ A Revit custom exporter add-in generating JSON output for the [vA3C](http://va3c
 
 ## Setup, Compilation and Installation
 
-RvtVa3c is a standard Revit add-in application.
+RvtVa3c is a Revit add-in implementing an external application and an external command.
 
 It is installed in the standard manner, i.e., by copying two files to the standard Revit Add-Ins folder:
 
-- The .NET assembly DLL RvtVa3c.dll
-- The add-in manifest RvtVa3c.addin
+- The .NET assembly DLL `RvtVa3c.dll`
+- The add-in manifest `RvtVa3c.addin`
 
 In order to generate the DLL, you download and compile the Visual Studio solution:
 
