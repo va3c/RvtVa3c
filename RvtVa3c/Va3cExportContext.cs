@@ -782,7 +782,8 @@ namespace RvtVa3c
       // This method is invoked only if the 
       // custom exporter was set to include faces.
 
-      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      //Debug.Assert( false, "we set exporter.IncludeFaces false" ); // removed in Revit 2017
+
       Debug.WriteLine( "  OnFaceBegin: " + node.NodeName );
       return RenderNodeAction.Proceed;
     }
@@ -792,16 +793,22 @@ namespace RvtVa3c
       // This method is invoked only if the 
       // custom exporter was set to include faces.
 
-      Debug.Assert( false, "we set exporter.IncludeFaces false" );
+      //Debug.Assert( false, "we set exporter.IncludeFaces false" ); // removed in Revit 2017
+
       Debug.WriteLine( "  OnFaceEnd: " + node.NodeName );
+
       // Note: This method is invoked even for faces that were skipped.
     }
 
     public RenderNodeAction OnInstanceBegin( InstanceNode node )
     {
-      Debug.WriteLine( "  OnInstanceBegin: " + node.NodeName + " symbol: " + node.GetSymbolId().IntegerValue );
+      Debug.WriteLine( "  OnInstanceBegin: " + node.NodeName 
+        + " symbol: " + node.GetSymbolId().IntegerValue );
+
       // This method marks the start of processing a family instance
-      _transformationStack.Push( CurrentTransform.Multiply( node.GetTransform() ) );
+
+      _transformationStack.Push( CurrentTransform.Multiply( 
+        node.GetTransform() ) );
 
       // We can either skip this instance or proceed with rendering it.
       return RenderNodeAction.Proceed;
