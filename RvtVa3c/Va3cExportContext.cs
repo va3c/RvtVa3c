@@ -620,13 +620,14 @@ namespace RvtVa3c
       return false;
     }
 
-    public void OnDaylightPortal( DaylightPortalNode node )
-    {
-      Debug.WriteLine( "OnDaylightPortal: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnDaylightPortal: Asset:"
-        + ( ( asset != null ) ? asset.Name : "Null" ) );
-    }
+    // Removed in Revit 2017:
+    //public void OnDaylightPortal( DaylightPortalNode node )
+    //{
+    //  Debug.WriteLine( "OnDaylightPortal: " + node.NodeName );
+    //  Asset asset = node.GetAsset();
+    //  Debug.WriteLine( "OnDaylightPortal: Asset:"
+    //    + ( ( asset != null ) ? asset.Name : "Null" ) );
+    //}
 
     public void OnRPC( RPCNode node )
     {

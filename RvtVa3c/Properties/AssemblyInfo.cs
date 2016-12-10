@@ -48,6 +48,7 @@ using System.Runtime.InteropServices;
 // 2015-02-15 2015.0.0.29 incremented copyright year
 // 2015-03-04 2015.0.0.30 integrated anapujol's UI to filter parameters, cf. description in https://github.com/va3c/RvtVa3c/pull/6
 // 2015-04-13 2015.0.0.31 cleaned up after ana
+// 2016-12-10 2017.0.0.0 flat migration to Revit 2017
 //
-[assembly: AssemblyVersion( "2015.0.0.31" )]
-[assembly: AssemblyFileVersion( "2015.0.0.31" )]
+[assembly: AssemblyVersion( "2017.0.0.0" )]
+[assembly: AssemblyFileVersion( "2017.0.0.0" )]

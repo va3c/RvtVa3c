@@ -73,8 +73,8 @@ namespace RvtVa3c
       // OnFaceBegin calls, not the actual processing 
       // of face tessellation. Meshes of the faces 
       // will still be received by the context.
-
-      exporter.IncludeFaces = false;
+      //
+      //exporter.IncludeFaces = false; // removed in Revit 2017
 
       exporter.ShouldStopOnError = false;
 
