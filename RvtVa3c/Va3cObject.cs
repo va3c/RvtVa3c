@@ -9,14 +9,15 @@ namespace RvtVa3c
   /// <summary>
   /// three.js object class, successor of Va3cScene.
   /// The structure and properties defined here were
-  /// reverse engineered ftom JSON files exported 
+  /// reverse engineered from JSON files exported 
   /// by the three.js and vA3C editors.
   /// </summary>
   [DataContract]
   public class Va3cContainer
   {
     /// <summary>
-    /// Based on MeshPhongMaterial obtained by exporting a cube from the thr
+    /// Based on MeshPhongMaterial obtained by 
+    /// exporting a cube from the three.js editor.
     /// </summary>
     public class Va3cMaterial
     {
