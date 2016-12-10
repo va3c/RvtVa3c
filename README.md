@@ -17,7 +17,7 @@ In order to generate the DLL, you download and compile the Visual Studio solutio
 - Download or clone the [RvtVa3c GitHub repository](https://github.com/va3c/RvtVa3c).
 - Open the solution file RvtVa3c.sln in Visual Studio; to build it:
 - Add references to the Revit API assembly files `RevitAPI.dll` and `RevitAPIUI.dll`, located in your Revit installation directory.
-- If you wish to debug, set up the path to the Revit executable in the Debug tab, Start External Program; change the path to your system installation, e.g., `C:\Program Files\Autodesk\Revit Architecture 2017\Revit.exe`.
+- If you wish to debug, set up the path to the Revit executable in the Debug tab, Start External Program; change the path to your system installation, e.g., `C:\Program Files\Autodesk\Revit Architecture 2017\Revit.exe`.
 - Build and optionally debug into Revit.exe.
 
 This will open the Revit installation and install the plugin.
