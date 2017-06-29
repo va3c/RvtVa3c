@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "Autodesk Inc." )]
 [assembly: AssemblyProduct( "RvtVa3c" )]
-[assembly: AssemblyCopyright( "Copyright 2014-2015 © Jeremy Tammik Autodesk Inc." )]
+[assembly: AssemblyCopyright( "Copyright 2014-2017 © Jeremy Tammik Autodesk Inc." )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -49,6 +49,7 @@ using System.Runtime.InteropServices;
 // 2015-03-04 2015.0.0.30 integrated anapujol's UI to filter parameters, cf. description in https://github.com/va3c/RvtVa3c/pull/6
 // 2015-04-13 2015.0.0.31 cleaned up after ana
 // 2016-12-10 2017.0.0.0 flat migration to Revit 2017
+// 2017-06-29 2018.0.0.0 flat migration to Revit 2018
 //
-[assembly: AssemblyVersion( "2017.0.0.0" )]
-[assembly: AssemblyFileVersion( "2017.0.0.0" )]
+[assembly: AssemblyVersion( "2018.0.0.0" )]
+[assembly: AssemblyFileVersion( "2018.0.0.0" )]

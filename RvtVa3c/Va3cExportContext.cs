@@ -5,7 +5,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.IO;
 using Autodesk.Revit.DB;
-using Autodesk.Revit.Utility;
+//using Autodesk.Revit.Utility;
 using Newtonsoft.Json;
 #endregion // Namespaces
 
@@ -632,9 +632,9 @@ namespace RvtVa3c
     public void OnRPC( RPCNode node )
     {
       Debug.WriteLine( "OnRPC: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnRPC: Asset:"
-        + ( ( asset != null ) ? asset.Name : "Null" ) );
+      //Asset asset = node.GetAsset();
+      //Debug.WriteLine( "OnRPC: Asset:"
+      //  + ( ( asset != null ) ? asset.Name : "Null" ) );
     }
 
     public RenderNodeAction OnViewBegin( ViewNode node )
@@ -838,8 +838,8 @@ namespace RvtVa3c
     public void OnLight( LightNode node )
     {
       Debug.WriteLine( "OnLight: " + node.NodeName );
-      Asset asset = node.GetAsset();
-      Debug.WriteLine( "OnLight: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
+      //Asset asset = node.GetAsset();
+      //Debug.WriteLine( "OnLight: Asset:" + ( ( asset != null ) ? asset.Name : "Null" ) );
     }
   }
 }

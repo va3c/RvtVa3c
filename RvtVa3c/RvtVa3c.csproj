@@ -51,11 +51,11 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\Program Files\Autodesk\Revit 2017\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files\Autodesk\Revit 2018\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -97,8 +97,8 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2015\RvtVa3c.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2017"
-copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2017"
-copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2017"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2018"
+copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2018"
+copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2018"</PostBuildEvent>
   </PropertyGroup>
 </Project>
