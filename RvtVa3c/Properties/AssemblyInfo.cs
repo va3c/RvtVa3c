@@ -50,6 +50,7 @@ using System.Runtime.InteropServices;
 // 2015-04-13 2015.0.0.31 cleaned up after ana
 // 2016-12-10 2017.0.0.0 flat migration to Revit 2017
 // 2017-06-29 2018.0.0.0 flat migration to Revit 2018
+// 2019-10-02 2020.0.0.0 flat migration to Revit 2020
 //
-[assembly: AssemblyVersion( "2018.0.0.0" )]
-[assembly: AssemblyFileVersion( "2018.0.0.0" )]
+[assembly: AssemblyVersion( "2020.0.0.0" )]
+[assembly: AssemblyFileVersion( "2020.0.0.0" )]
