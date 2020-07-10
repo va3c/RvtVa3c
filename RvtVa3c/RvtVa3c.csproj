@@ -40,7 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
-    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2015\Revit.exe</StartProgram>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2020\Revit.exe</StartProgram>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -93,12 +93,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterClean">
-    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2015\RvtVa3c.addin" />
-    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2015\RvtVa3c.dll" />
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2020\RvtVa3c.addin" />
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2020\RvtVa3c.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2020"
-copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2020"
-copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2020"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2020\"
+copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2020\"
+copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2020\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
