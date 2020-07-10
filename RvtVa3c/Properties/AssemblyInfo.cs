@@ -51,6 +51,7 @@ using System.Runtime.InteropServices;
 // 2016-12-10 2017.0.0.0 flat migration to Revit 2017
 // 2017-06-29 2018.0.0.0 flat migration to Revit 2018
 // 2019-10-02 2020.0.0.0 flat migration to Revit 2020
+// 2020-07-10 2020.0.0.1 integrated updated build events and debug settings for Revit 2020 from pull request #16 by @pabloderen
 //
-[assembly: AssemblyVersion( "2020.0.0.0" )]
-[assembly: AssemblyFileVersion( "2020.0.0.0" )]
+[assembly: AssemblyVersion( "2020.0.0.1" )]
+[assembly: AssemblyFileVersion( "2020.0.0.1" )]
