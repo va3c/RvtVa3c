@@ -17,7 +17,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RvtVa3c</RootNamespace>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -51,12 +51,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2020\RevitAPI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2020\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -97,8 +95,8 @@
     <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2020\RvtVa3c.dll" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2020\"
-copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2020\"
-copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2020\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)RvtVa3c.addin" "$(AppData)\Autodesk\REVIT\Addins\2021\"
+copy "$(ProjectDir)bin\debug\RvtVa3c.dll" "$(AppData)\Autodesk\REVIT\Addins\2021\"
+copy "$(ProjectDir)bin\debug\Newtonsoft.Json.dll" "$(AppData)\Autodesk\REVIT\Addins\2021\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "Autodesk Inc." )]
 [assembly: AssemblyProduct( "RvtVa3c" )]
-[assembly: AssemblyCopyright( "Copyright 2014-2017 © Jeremy Tammik Autodesk Inc." )]
+[assembly: AssemblyCopyright( "Copyright 2014-2020 © Jeremy Tammik Autodesk Inc." )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -52,6 +52,7 @@ using System.Runtime.InteropServices;
 // 2017-06-29 2018.0.0.0 flat migration to Revit 2018
 // 2019-10-02 2020.0.0.0 flat migration to Revit 2020
 // 2020-07-10 2020.0.0.1 integrated updated build events and debug settings for Revit 2020 from pull request #16 by @pabloderen
+// 2020-07-10 2021.0.0.0 flat migration to Revit 2021
 //
-[assembly: AssemblyVersion( "2020.0.0.1" )]
-[assembly: AssemblyFileVersion( "2020.0.0.1" )]
+[assembly: AssemblyVersion( "2021.0.0.0" )]
+[assembly: AssemblyFileVersion( "2021.0.0.0" )]
