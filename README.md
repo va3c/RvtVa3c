@@ -64,3 +64,10 @@ For more details on programming Revit add-ins in general, please refer to the [R
 Implemented by Matt Mason and Jeremy Tammik,
 [The Building Coder](http://thebuildingcoder.typepad.com), Autodesk Inc.,
 at the New York AEC Hackathon in May 2014.
+
+
+## <a name="license"></a>License
+
+This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+Please see the [LICENSE](LICENSE) file for full details.
+
