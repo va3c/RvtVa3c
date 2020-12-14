@@ -53,6 +53,7 @@ using System.Runtime.InteropServices;
 // 2019-10-02 2020.0.0.0 flat migration to Revit 2020
 // 2020-07-10 2020.0.0.1 integrated updated build events and debug settings for Revit 2020 from pull request #16 by @pabloderen
 // 2020-07-10 2021.0.0.0 flat migration to Revit 2021
+// 2020-12-14 2021.0.0.1 check for null category to avoid null reference exception in issue #18 (and #17?)
 //
-[assembly: AssemblyVersion( "2021.0.0.0" )]
-[assembly: AssemblyFileVersion( "2021.0.0.0" )]
+[assembly: AssemblyVersion( "2021.0.0.1" )]
+[assembly: AssemblyFileVersion( "2021.0.0.1" )]

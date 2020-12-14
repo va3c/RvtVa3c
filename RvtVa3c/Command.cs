@@ -92,21 +92,31 @@ namespace RvtVa3c
     /// </summary>
     /// <param name="doc">Revit Document</param>
     /// <param name="includeType">Include Type Parameters in the filter dialog</param>
-    public void filterElementParameters( Document doc, bool includeType )
+    public void filterElementParameters( 
+      Document doc, 
+      bool includeType )
     {
       _parameterDictionary = new Dictionary<string, List<string>>();
       _toExportDictionary = new Dictionary<string, List<string>>();
 
-      FilteredElementCollector collector = new FilteredElementCollector( doc, doc.ActiveView.Id );
+      FilteredElementCollector collector 
+        = new FilteredElementCollector( doc, 
+          doc.ActiveView.Id );
 
       // Create a dictionary with all the properties for each category.
 
       foreach( var fi in collector )
       {
-
+        if( null == fi.Category )
+        {
+          continue;
+        }
         string category = fi.Category.Name;
 
-        if( category != "Title Blocks" && category != "Generic Annotations" && category != "Detail Items" && category != "Cameras" )
+        if( category != "Title Blocks" 
+          && category != "Generic Annotations" 
+          && category != "Detail Items" 
+          && category != "Cameras" )
         {
           IList<Parameter> parameters = fi.GetOrderedParameters();
           List<string> parameterNames = new List<string>();
